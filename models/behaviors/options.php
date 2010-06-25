@@ -35,14 +35,16 @@ class OptionsBehavior extends ModelBehavior {
 			}
 		} else {
 			$option = isset($Model->options[$type]) ? $Model->options[$type] : array();
+			$default = array();
 			if ($Model->defaultOption) {
 				$default = $this->_getDefault($Model->defaultOption, $Model->options);
-				$option = Set::merge($default, $option);
 			}
+			$options = array();
 			if (isset($option['options']) && !empty($option['options'])) {
-				$option = $this->_intelligentlyMerge($option, (array)$option['options'], $Model->options);
+				$options = $this->_intelligentlyMerge(array(), $option['options'], $Model->options);
 				unset($option['options']);
 			}
+			$option = Set::merge($default, $options, $option);
 		}
 		return $option;
 	}

@@ -137,23 +137,23 @@ class OptionsBehaviorTest extends CakeTestCase {
 		);
 
 		$result = $this->Model->options('string');
-		$expects = array('conditions' => array('merging', 'one'), 'order' => 'merging');
+		$expects = array('conditions' => array('one', 'merging'), 'order' => 'merging');
 		$this->assertEqual($result, $expects);
 
 		$result = $this->Model->options('single_array');
-		$expects = array('conditions' => array('merging', 'one'), 'order' => 'merging');
+		$expects = array('conditions' => array('one', 'merging'), 'order' => 'merging');
 		$this->assertEqual($result, $expects);
 
 		$result = $this->Model->options('multi_array');
-		$expects = array('conditions' => array('merging', 'one'), 'order' => 'two', 'group' => 'two');
+		$expects = array('conditions' => array('one', 'merging'), 'order' => 'merging', 'group' => 'two');
 		$this->assertEqual($result, $expects);
 
 		$result = $this->Model->options('extra_options');
-		$expects = array('conditions' => array('merging', 'extra'), 'order' => 'merging');
+		$expects = array('conditions' => array('extra', 'merging'), 'order' => 'merging');
 		$this->assertEqual($result, $expects);
 
 		$result = $this->Model->options('chaos');
-		$expects = array('one', 'four', 'conditions' => array('merging', 'chaos'), 'order' => 'merging');
+		$expects = array('one', 'four', 'conditions' => array('chaos', 'merging'), 'order' => 'merging');
 		$this->assertEqual($result, $expects);
 	}
 }
