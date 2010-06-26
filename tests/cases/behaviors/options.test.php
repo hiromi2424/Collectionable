@@ -4,8 +4,17 @@ class OptionsBehaviorMockModel extends CakeTestModel {
 	var $useTable = false;
 }
 
+if (!class_exists('VirtualFieldsUser')) {
+	class VirtualFieldsUser extends CakeTestModel {
+		var $name = 'VirtualFieldsUser';
+		var $alias = 'User';
+	}
+}
+
 class OptionsBehaviorTest extends CakeTestCase {
 	var $Model;
+	var $fixtures = array('plugin.collectionable.virtual_fields_user');
+	var $autoFixtures = false;
 
 	function startCase() {
 		$this->Model =& ClassRegistry::init('OptionsBehaviorMockModel');
@@ -154,6 +163,26 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 		$result = $this->Model->options('chaos');
 		$expects = array('one', 'four', 'conditions' => array('chaos', 'merging'), 'order' => 'merging');
+		$this->assertEqual($result, $expects);
+	}
+
+	function testFindOptions() {
+		$this->loadFixtures('VirtualFieldsUser');
+		$User =& ClassRegistry::init(array('alias' => 'User', 'class' => 'VirtualFieldsUser'));
+		$User->recursive = -1;
+		$User->options = array(
+			'limitation' => array(
+				'limit' => 1,
+				'fields' => array('User.id', 'User.first_name')
+			),
+		);
+		$User->Behaviors->attach('Collectionable.options');
+
+		$result = $User->find('all', array('options' => 'limitation', 'limit' => 2, 'order' => 'User.id'));
+		$expects = array(
+			array('User' => array('id' => 1, 'first_name' => 'yamada')),
+			array('User' => array('id' => 2, 'first_name' => 'tanaka')),
+		);
 		$this->assertEqual($result, $expects);
 	}
 }

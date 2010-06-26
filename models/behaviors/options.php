@@ -23,6 +23,15 @@ class OptionsBehavior extends ModelBehavior {
 		return true;
 	}
 
+	function beforeFind(&$Model, $query = array()) {
+		if (isset($query['options'])) {
+			$options = $query['options'];
+			unset($query['options']);
+			$query = Set::pushDiff($query, $this->options($Model, $options));
+		}
+		return $query;
+	}
+
 	function options(&$Model, $type = null){
 		$args = func_get_args();
 		if (func_num_args() > 2) {
@@ -30,8 +39,8 @@ class OptionsBehavior extends ModelBehavior {
 			$type = $args;
 		}
 
+		$option = array();
 		if (is_array($type)) {
-			$option = array();
 			foreach ($type as $t) {
 				$option = Set::merge($option, $this->options(&$Model, $t));
 			}

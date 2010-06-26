@@ -14,7 +14,7 @@ This is a utility plugin for CakePHP. This helps managing find options and virtu
 Here is a simple Post Model.
 	class Post extends AppModel {
 		var $hasMany = array('Comment');
-		var $hasOne = array('Profile');
+		var $hasOne = array('Status');
 
 		var $acsAs = array('Collectionable.options');
 		var $defaultOption = true; // or string like 'default'
@@ -23,18 +23,21 @@ Here is a simple Post Model.
 			'default' => array(
 				'contain' => array(
 					'Comment',
-					'Profile',
+					'Status',
 				),
 			'limit' => 10,
 			),
 			'published' => array(
-				'condtiions' => array('Post.published' => true),
+				'condtiions' => array('Status.published' => true),
 			),
 			'recent' => array(
 				'order' => ('Post.updated DESC'),
 			),
 			'rss' => array(
 				'limit' => 15,
+			),
+			'unlimited' => array(
+				'limit' => null,
 			),
 			'index' => array(
 				// You can do sub merging
@@ -54,7 +57,14 @@ You can use them by like:
 		}
 
 		function rss() {
-			$posts = $this->Post->find('all', $this->Post->options('index', 'rss')) // multiple merging at run time;
+			$this->paginate = $this->Post->options('index', 'rss'); // multiple merging at run time;
+			$this->set('posts', $this->paginate());
+		}
+
+		function all_in_one_page() {
+			// you can use "options" attribute wihtin finding options
+			$posts = $this->Post->find('all', array('options' => array('index', 'unlimited')));
+			$this->set(compact('posts'));
 		}
 	}
 
