@@ -4,8 +4,8 @@
 This is a utility plugin for CakePHP. This helps managing find options and virtualFields.
 
 ## Setup ##
-* Define $options(such a property name can be modified by configure) for Options Behavior
-* Define $virtualFieldsCollection(such a property name can be modified by configure) for VirtualFields Behavior
+- Define $options(such a property name can be modified by configure) for Options Behavior
+- Define $virtualFieldsCollection(such a property name can be modified by configure) for VirtualFields Behavior
 
 ## Sample code ##
 
@@ -96,3 +96,6 @@ You can use them by like:
 			$this->set(compact('user'));
 		}
 	}
+
+## Thanks ##
+- [nojimage](http://github.com/nojimage) created [base of this plugin](http://github.com/nojimage/paging)
