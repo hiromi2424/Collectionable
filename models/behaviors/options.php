@@ -6,13 +6,15 @@ class OptionsBehavior extends ModelBehavior {
 	var $defaultSettings = array(
 		'setupProperty' => true,
 		'defaultOption' => false,
+		'optionName' => 'options',
 	);
 
 	function setup(&$Model, $settings = array()) {
 		$this->settings = array_merge($this->defaultSettings, (array)$settings);
+		$optionName = $this->settings['optionName'];
 		if ($this->settings['setupProperty']) {
-			if (empty($Model->options)) {
-				$Model->options = array();
+			if (empty($Model->{$optionName})) {
+				$Model->{$optionName} = array();
 			}
 			if (empty($Model->defaultOption)) {
 				$Model->defaultOption = $this->settings['defaultOption'];
@@ -34,14 +36,15 @@ class OptionsBehavior extends ModelBehavior {
 				$option = Set::merge($option, $this->options(&$Model, $t));
 			}
 		} else {
-			$option = isset($Model->options[$type]) ? $Model->options[$type] : array();
+			$optionName = $this->settings['optionName'];
+			$option = isset($Model->{$optionName}[$type]) ? $Model->{$optionName}[$type] : array();
 			$default = array();
 			if ($Model->defaultOption) {
-				$default = $this->_getDefault($Model->defaultOption, $Model->options);
+				$default = $this->_getDefault($Model->defaultOption, $Model->{$optionName});
 			}
 			$options = array();
 			if (isset($option['options']) && !empty($option['options'])) {
-				$options = $this->_intelligentlyMerge(array(), $option['options'], $Model->options);
+				$options = $this->_intelligentlyMerge(array(), $option['options'], $Model->{$optionName});
 				unset($option['options']);
 			}
 			$option = Set::merge($default, $options, $option);
