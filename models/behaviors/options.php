@@ -9,6 +9,11 @@ class OptionsBehavior extends ModelBehavior {
 		'optionName' => 'options',
 	);
 
+	var $defaultQuery = array(
+		'conditions' => null, 'fields' => null, 'joins' => array(), 'limit' => null,
+		'offset' => null, 'order' => null, 'page' => null, 'group' => null, 'callbacks' => true
+	);
+
 	function setup(&$Model, $settings = array()) {
 		$this->settings = array_merge($this->defaultSettings, (array)$settings);
 		$optionName = $this->settings['optionName'];
@@ -27,7 +32,8 @@ class OptionsBehavior extends ModelBehavior {
 		if (isset($query['options'])) {
 			$options = $query['options'];
 			unset($query['options']);
-			$query = Set::pushDiff($query, $this->options($Model, $options));
+
+			$query = Set::merge($this->defaultQuery, $this->options($Model, $options), Set::filter($query));
 		}
 		return $query;
 	}
@@ -52,8 +58,8 @@ class OptionsBehavior extends ModelBehavior {
 				$default = $this->_getDefault($Model->defaultOption, $Model->{$optionName});
 			}
 			$options = array();
-			if (isset($option['options']) && !empty($option['options'])) {
-				$options = $this->_intelligentlyMerge(array(), $option['options'], $Model->{$optionName});
+			if (isset($option[$optionName]) && !empty($option[$optionName])) {
+				$options = $this->_intelligentlyMerge(array(), $option[$optionName], $Model->{$optionName});
 				unset($option['options']);
 			}
 			$option = Set::merge($default, $options, $option);
