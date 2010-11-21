@@ -1,11 +1,12 @@
 # Collectionable Plugin #
 
 ## Introduction ##
-This is a utility plugin for CakePHP. This helps managing find options and virtualFields.
+This is a utility plugin for CakePHP. This helps managing find options, virtualFields and validations.
 
 ## Setup ##
 - Define $options(such a property name can be modified by configure) for Options Behavior
 - Define $virtualFieldsCollection(such a property name can be modified by configure) for VirtualFields Behavior
+- Define 'Validation'(such a config name can be modified by configure) section into Configure for ConfigValidationBehavior
 
 ## Sample code ##
 
@@ -106,6 +107,64 @@ You can use them by like:
 			$this->set(compact('user'));
 		}
 	}
+
+### ConfigValidationBehavior ###
+
+
+	class User extends AppModel {
+		var $actsAs = array('Collectionable.ConfigValidation');
+
+		var $validate = array(
+			'nickname' => array(
+				'required' => array(
+					'rule' => array('notempty'),
+				),
+				'min' => array(
+					'rule' => array('minlength'),
+					'message' => 'I said more than %s!!',
+				),
+			),
+			'email' => array(
+				'required' => array(
+					'rule' => array('notempty'),
+				),
+				'among' => array(
+					'rule' => array('between'),
+				),
+			),
+		);
+	}
+
+You can set validation parameters, messages from Configuration:
+
+
+	Configure::write('Validation', array(
+		'parameters' => array(
+			'User' => array(
+				'nickname' => array(
+					'min' => 3,
+				),
+				'email' => array(
+					'among' => array(16, 256)
+				),
+			),
+		),
+		'messages' => array(
+			'default' => array(
+				'required' => 'you need to enter.',
+				'min' => '%s characters needed',
+			),
+			'User' => array(
+				'email' => array(
+					'required' => 'are you kidding me or misreading?',
+				),
+			),
+		),
+	));
+
+
+Note that priority is "hard coded on your model" > "specifying Model and field" > "default".
+But if you turn $overwrite property on, "specifying Model and field" forces to overwrite("default" does not).
 
 ## Thanks ##
 - [nojimage](http://github.com/nojimage) created [base of this plugin](http://github.com/nojimage/paging)
