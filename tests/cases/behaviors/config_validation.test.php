@@ -322,5 +322,23 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 
 		$this->assertEqual($this->Model->validate['nickname']['moge']['message'], '5000 hoge');
 	}
+
+	function testGetValidationParameter() {
+		$this->expectError();
+		$this->assertNull($this->Behavior->getValidationParameter($this->Model, 'nickname', null));
+		$this->assertNull($this->Behavior->getValidationParameter($this->Model, 'nickname', 'undefined'));
+		$this->assertEqual($this->Behavior->getValidationParameter($this->Model, 'nickname', 'max'), 32);
+		$this->assertEqual($this->Behavior->getValidationParameter($this->Model, 'nickname', 'multi'), array(-100, 900));
+	}
+
+	function testGetConfigMessage() {
+		$this->Behavior->convertFormat = true;
+
+		$this->expectError();
+		$this->assertNull($this->Behavior->getValidationMessage($this->Model, null));
+		$this->assertNull($this->Behavior->getValidationMessage($this->Model, 'not defined'));
+		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'fuga'), 'でふぉると');
+		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'max'), '%s文字以内で入力してください。');
+		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'nickname', 'min'), '10文字ください');
+	}
 }
-?>

@@ -83,4 +83,48 @@ class ConfigValidationBehavior extends ModelBehavior {
 		array_unshift($args, $this->configName);
 		return Configure::read(implode('.', $args));
 	}
+
+	function getValidationParameter(&$model, $field, $rule) {
+		if (is_array($field) || is_array($rule) || $field === null || $rule === null) {
+			trigger_error(__('getValidationParameter(() requires 2 arguments as $field and $rule', true));
+			return null;
+		}
+
+		$this->beforeValidate($model);
+		if (empty($model->validate[$field][$rule]['rule'])) {
+			return null;
+		}
+		$rule = $model->validate[$field][$rule]['rule'];
+		array_shift($rule);
+		if (empty($rule)) {
+			return null;
+		}
+		$parameters = count($rule) === 1 ? current($rule) : $rule;
+		return $parameters;
+	}
+
+	function getValidationMessage(&$model, $rule, $field = null) {
+		if (is_array($rule) || $rule === null) {
+			trigger_error(__('getValidationMessage() requires a argument as $rule', true));
+			return null;
+		}
+		if (is_array($field)) {
+			$field = null;
+		}
+		if ($field !== null) {
+			$swap = $rule;
+			$rule = $field;
+			$field = $swap;
+		}
+		if ($field === null) {
+			$default = $this->_config($this->messagesName, 'default', $rule);
+			return $default;
+		}
+
+		$this->beforeValidate($model);
+		if (empty($model->validate[$field][$rule]['message'])) {
+			return null;
+		}
+		return $model->validate[$field][$rule]['message'];
+	}
 }
