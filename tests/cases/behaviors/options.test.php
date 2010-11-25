@@ -8,12 +8,19 @@ if (!class_exists('VirtualFieldsUser')) {
 	class VirtualFieldsUser extends CakeTestModel {
 		var $name = 'VirtualFieldsUser';
 		var $alias = 'User';
+		var $hasMany = array(
+			'Post' => array(
+				'className' => 'VirtualFieldsPost',
+				'table' => 'Virtual_fields_posts',
+				'foreignKey' => 'user_id',
+			),
+		);
 	}
 }
 
 class OptionsBehaviorTest extends CakeTestCase {
 	var $Model;
-	var $fixtures = array('plugin.collectionable.virtual_fields_user');
+	var $fixtures = array('plugin.collectionable.virtual_fields_user', 'plugin.collectionable.virtual_fields_post');
 	var $autoFixtures = false;
 
 	function startCase() {

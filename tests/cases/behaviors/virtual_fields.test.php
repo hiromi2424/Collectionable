@@ -4,16 +4,18 @@ class VirtualFieldsBehaviorMockModel extends CakeTestModel {
 	var $useTable = false;
 }
 
-class VirtualFieldsUser extends CakeTestModel {
-	var $name = 'VirtualFieldsUser';
-	var $alias = 'User';
-	var $hasMany = array(
-		'Post' => array(
-			'className' => 'VirtualFieldsPost',
-			'table' => 'Virtual_fields_posts',
-			'foreignKey' => 'user_id',
-		),
-	);
+if (!class_exists('VirtualFieldsUser')) {
+	class VirtualFieldsUser extends CakeTestModel {
+		var $name = 'VirtualFieldsUser';
+		var $alias = 'User';
+		var $hasMany = array(
+			'Post' => array(
+				'className' => 'VirtualFieldsPost',
+				'table' => 'Virtual_fields_posts',
+				'foreignKey' => 'user_id',
+			),
+		);
+	}
 }
 
 class VirualFieldsBehaviorTest extends CakeTestCase {
