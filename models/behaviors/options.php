@@ -48,7 +48,7 @@ class OptionsBehavior extends ModelBehavior {
 		$option = array();
 		if (is_array($type)) {
 			foreach ($type as $t) {
-				$option = Set::merge($option, $this->options(&$Model, $t));
+				$option = Set::merge($option, $this->options($Model, $t));
 			}
 		} else {
 			$optionName = $this->settings['optionName'];
