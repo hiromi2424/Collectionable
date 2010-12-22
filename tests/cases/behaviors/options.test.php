@@ -192,4 +192,22 @@ class OptionsBehaviorTest extends CakeTestCase {
 		);
 		$this->assertEqual($result, $expects);
 	}
+
+	function testRecursiveMerge() {
+		$this->Model->options = array(
+			'one' => array('conditions' => array('one')),
+			'two' => array('conditions' => array('two'), 'options' => 'one'),
+			'three' => array('conditions' => array('three'), 'options' => 'two'),
+			'four' => array('conditions' => array('four')),
+		);
+
+		$result = $this->Model->options('three');
+		$expects = array('one', 'two', 'three');
+		$this->assertEqual($result['conditions'], $expects);
+
+		$this->Model->defaultOption = 'three';
+		$result = $this->Model->options('four');
+		$expects = array('one', 'two', 'three', 'four');
+		$this->assertEqual($result['conditions'], $expects);
+	}
 }

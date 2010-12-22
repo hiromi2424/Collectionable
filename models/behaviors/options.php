@@ -74,7 +74,7 @@ class OptionsBehavior extends ModelBehavior {
 		} elseif (is_array($defaultOption)) {
 			$default = $this->_intelligentlyMerge($default, $defaultOption, $options);
 		} elseif (!empty($options[$defaultOption])) {
-			$default = $options[$defaultOption];
+			$default = $this->_intelligentlyMerge($default, $options[$defaultOption], $options);
 		}
 		return $default;
 	}
@@ -84,13 +84,17 @@ class OptionsBehavior extends ModelBehavior {
 		if (Set::numeric(array_keys($merges))) {
 			foreach($merges as $merge) {
 				if (!empty($options[$merge])) {
-					$data = Set::merge($data, $options[$merge]);
+					$data = $this->_intelligentlyMerge($data, $options[$merge], $options);
 				}
 			}
 		} else {
+			$optionName = $this->settings['optionName'];
+			if (array_key_exists($optionName, $merges)) {
+				$data = $this->_intelligentlyMerge($data, $merges[$optionName], $options);
+				unset($merges[$optionName]);
+			}
 			$data = Set::merge($data, $merges);
 		}
 		return $data;
 	}
-
 }
