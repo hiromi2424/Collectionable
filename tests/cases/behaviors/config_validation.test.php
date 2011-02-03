@@ -2,8 +2,9 @@
 App::import('Behavior', 'Collectionable.ConfigValidation');
 
 class ConfigValidaitonMockModel extends Model {
-	var $useTable = false;
-	var $validate = array(
+
+	public $useTable = false;
+	public $validate = array(
 		'nickname' => array(
 			'required' => array(
 				'rule' => array('notempty'),
@@ -35,16 +36,19 @@ class ConfigValidaitonMockModel extends Model {
 			),
 		),
 	);
+
 }
 
 class ConfigValidationBehaviorTestCase extends CakeTestCase {
-	var $data = array(
+
+	public $data = array(
 		'ConfigValidaitonMockModel' => array(
 			'nickname' => '0123456789012',
 		),
 	);
 
-	function start() {
+	protected function _configure() {
+
 		Configure::write('TestValidation', array(
 			'parameters' => array(
 				'ConfigValidaitonMockModel' => array(
@@ -71,38 +75,48 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 				),
 			),
 		));
-		parent::start();
+
 	}
 
-	function startTest() {
+	public function startTest() {
+		$this->_configure();
 		$this->_attach();
 	}
 
-	function endTest() {
+	public function endTest() {
 		$this->_clear();
 	}
 
-	function _attach() {
-		$this->Behavior = new ConfigValidationBehavior;
-		$this->Behavior->configName = 'TestValidation';
-		$this->Behavior->convertFormat = false;
-		$this->Model =& ClassRegistry::init('ConfigValidaitonMockModel');
+	public function tearDown() {
+		Configure::delete('TestValidation');
 	}
 
-	function _clear() {
-		unset($this->Behavior);
+	public function _attach($settings = array()) {
+
+		$this->Model = ClassRegistry::init('ConfigValidaitonMockModel');
+		$defaults = array(
+			'configName' => 'TestValidation',
+			'convertFormat' => false,
+			'' => '',
+		);
+		$this->Model->Behaviors->unload('ConfigValidation');
+		$this->Model->Behaviors->load('ConfigValidation', $settings + $defaults);
+
+	}
+
+	public function _clear() {
 		unset($this->Model);
 		ClassRegistry::flush();
 	}
 
-	function _reattach() {
+	public function _reattach() {
 		$this->_clear();
 		$this->_attach();
 	}
 
-	function testAll() {
-		$this->Behavior->convertFormat = true;
-		$this->Behavior->beforeValidate($this->Model);
+	public function testAll() {
+		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
+		$this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model);
 
 		$result = $this->Model->validate;
 		$expects = array(
@@ -142,9 +156,9 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		);
 
 		$this->_reattach();
-		$this->Behavior->convertFormat = true;
-		$this->Behavior->overwrite = 'parameters';
-		$this->Behavior->beforeValidate($this->Model);
+		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
+		$this->Model->Behaviors->ConfigValidation->overwrite = 'parameters';
+		$this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model);
 
 		$result = $this->Model->validate;
 		$expects = array(
@@ -184,9 +198,9 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		);
 
 		$this->_reattach();
-		$this->Behavior->convertFormat = true;
-		$this->Behavior->overwrite = 'messages';
-		$this->Behavior->beforeValidate($this->Model);
+		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
+		$this->Model->Behaviors->ConfigValidation->overwrite = 'messages';
+		$this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model);
 
 		$result = $this->Model->validate;
 		$expected = array(
@@ -227,9 +241,9 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->assertEqual($result, $expected);
 
 		$this->_reattach();
-		$this->Behavior->convertFormat = true;
-		$this->Behavior->overwrite = true;
-		$this->Behavior->beforeValidate($this->Model);
+		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
+		$this->Model->Behaviors->ConfigValidation->overwrite = true;
+		$this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model);
 
 		$result = $this->Model->validate;
 		$expected = array(
@@ -271,38 +285,38 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 
 		$this->_reattach();
 		$this->Model->validate = true;
-		$this->assertTrue($this->Behavior->beforeValidate($this->Model));
+		$this->assertTrue($this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model));
 		$this->assertTrue($this->Model->validate);
 
 		$this->_reattach();
 		$this->Model->validate = array();
-		$this->assertTrue($this->Behavior->beforeValidate($this->Model));
+		$this->assertTrue($this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model));
 		$this->assertEqual($this->Model->validate, array());
 
 		$this->_reattach();
 		$this->Model->validate = array('hoge' => array('monyomonyo' => array('hoge' => '%s')));
-		$this->assertTrue($this->Behavior->beforeValidate($this->Model));
+		$this->assertTrue($this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model));
 		$this->assertEqual($this->Model->validate, array('hoge' => array('monyomonyo' => array('hoge' => '%s'))));
 	}
 
-	function testSetParameters() {
-		$this->Behavior->_setParameters($this->Model);
+	public function testSetValidationParameters() {
+		$this->Model->setValidationParameters();
 
 		$this->assertEqual($this->Model->validate['nickname']['min']['rule'], array('minlength', 10));
 		$this->assertEqual($this->Model->validate['nickname']['max']['rule'], array('maxlength', 32));
 		$this->assertEqual($this->Model->validate['nickname']['multi']['rule'], array('userdefined', -100, 900));
 
 		$this->_reattach();
-		$this->Behavior->overwrite = true;
-		$this->Behavior->_setParameters($this->Model);
+		$this->Model->Behaviors->ConfigValidation->overwrite = true;
+		$this->Model->setValidationParameters();
 
 		$this->assertEqual($this->Model->validate['nickname']['min']['rule'], array('minlength', 10));
 		$this->assertEqual($this->Model->validate['nickname']['max']['rule'], array('maxlength', 100));
 		$this->assertEqual($this->Model->validate['nickname']['multi']['rule'], array('userdefined', -100, 900));
 	}
 
-	function testSetMessages() {
-		$this->Behavior->_setMessages($this->Model);
+	public function testSetValidationMessages() {
+		$this->Model->setValidationMessages();
 		$this->assertEqual($this->Model->validate['nickname']['required']['message'], '必ず入力してください。');
 		$this->assertEqual($this->Model->validate['nickname']['max']['message'], '32文字');
 		$this->assertEqual($this->Model->validate['nickname']['hoge']['message'], '%sです');
@@ -310,35 +324,47 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->assertEqual($this->Model->validate['nickname']['fuga']['message'], 'ふがー');
 
 		$this->_reattach();
-		$this->Behavior->overwrite = true;
-		$this->Behavior->_setMessages($this->Model);
+		$this->Model->Behaviors->ConfigValidation->overwrite = true;
+		$this->Model->setValidationMessages();
 
 		$this->assertEqual($this->Model->validate['nickname']['fuga']['message'], 'してい');
 	}
 
-	function testConvertFormat() {
-		$this->Behavior->convertFormat = true;
-		$this->Behavior->_convertFormat($this->Model);
+	public function testConvertValidationFormat() {
+		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
+		$this->Model->convertValidationFormat();
 
 		$this->assertEqual($this->Model->validate['nickname']['moge']['message'], '5000 hoge');
 	}
 
-	function testGetValidationParameter() {
-		$this->expectError();
-		$this->assertNull($this->Behavior->getValidationParameter($this->Model, 'nickname', null));
-		$this->assertNull($this->Behavior->getValidationParameter($this->Model, 'nickname', 'undefined'));
-		$this->assertEqual($this->Behavior->getValidationParameter($this->Model, 'nickname', 'max'), 32);
-		$this->assertEqual($this->Behavior->getValidationParameter($this->Model, 'nickname', 'multi'), array(-100, 900));
+	public function testGetValidationParameter() {
+		try {
+			$this->Model->getValidationParameter('nickname', null);
+			$this->fail('Expected Exception was not thrown');
+		} catch (Exception $e) {
+			$this->assertEqual($e->getMessage(), __('getValidationParameter(() requires 2 arguments as $field and $rule'));
+		}
+
+		$this->assertNull($this->Model->getValidationParameter('nickname', 'undefined'));
+
+		$this->assertEqual($this->Model->getValidationParameter('nickname', 'max'), 32);
+		$this->assertEqual($this->Model->getValidationParameter('nickname', 'multi'), array(-100, 900));
 	}
 
-	function testGetConfigMessage() {
-		$this->Behavior->convertFormat = true;
+	public function testGetValidationMessage() {
+		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
 
-		$this->expectError();
-		$this->assertNull($this->Behavior->getValidationMessage($this->Model, null));
-		$this->assertNull($this->Behavior->getValidationMessage($this->Model, 'not defined'));
-		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'fuga'), 'でふぉると');
-		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'max'), '%s文字以内で入力してください。');
-		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'nickname', 'min'), '10文字ください');
+		try {
+			$this->Model->getValidationMessage(null);
+			$this->fail('Expected Exception was not thrown');
+		} catch (Exception $e) {
+			$this->assertEqual($e->getMessage(), __('getValidationMessage() requires a argument as $rule'));
+		}
+
+		$this->assertNull($this->Model->getValidationMessage('not defined'));
+
+		$this->assertEqual($this->Model->getValidationMessage('fuga'), 'でふぉると');
+		$this->assertEqual($this->Model->getValidationMessage('max'), '%s文字以内で入力してください。');
+		$this->assertEqual($this->Model->getValidationMessage('nickname', 'min'), '10文字ください');
 	}
 }

@@ -1,24 +1,30 @@
 <?php
 
 class ConfigValidationBehavior extends ModelBehavior {
-	var $configName = 'Validation';
-	var $overwrite = false; // true or $parameterName or $messageName
-	var $convertFormat = true;
 
-	var $parametersName = 'parameters';
-	var $messagesName = 'messages';
-	function beforeValidate(&$model) {
+	public $configName = 'Validation';
+	public $overwrite = false; // true or $parameterName or $messageName
+	public $convertFormat = true;
+
+	public $parametersName = 'parameters';
+	public $messagesName = 'messages';
+
+	public function setup($model, $settings = array()) {
+		$this->_set($settings);
+	}
+
+	public function beforeValidate($model) {
 		if (!$model->validate || !is_array($model->validate)) {
 			return true;
 		}
 
-		$this->_setParameters($model);
-		$this->_setMessages($model);
-		$this->_convertFormat($model);
+		$this->setValidationParameters($model);
+		$this->setValidationMessages($model);
+		$this->convertValidationFormat($model);
 		return true;
 	}
 
-	function _setParameters(&$model) {
+	public function setValidationParameters($model) {
 		$overwrite = $this->overwrite === true || $this->overwrite == $this->parametersName;
 		foreach ($model->validate as $field => $elements) {
 			foreach ($elements as $name => $element) {
@@ -36,7 +42,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 		}
 	}
 
-	function _setMessages(&$model) {
+	public function setValidationMessages($model) {
 		$overwrite = $this->overwrite === true || $this->overwrite == $this->messagesName;
 		foreach ($model->validate as $field => $elements) {
 			foreach ($elements as $name => $element) {
@@ -60,7 +66,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 		}
 	}
 
-	function _convertFormat(&$model) {
+	public function convertValidationFormat($model) {
 		if (!$this->convertFormat) {
 			return;
 		}
@@ -78,16 +84,15 @@ class ConfigValidationBehavior extends ModelBehavior {
 		}
 	}
 
-	function _config() {
+	protected function _config() {
 		$args = func_get_args();
 		array_unshift($args, $this->configName);
 		return Configure::read(implode('.', $args));
 	}
 
-	function getValidationParameter(&$model, $field, $rule) {
+	public function getValidationParameter($model, $field, $rule) {
 		if (is_array($field) || is_array($rule) || $field === null || $rule === null) {
-			trigger_error(__('getValidationParameter(() requires 2 arguments as $field and $rule', true));
-			return null;
+			throw new RuntimeException(__('getValidationParameter(() requires 2 arguments as $field and $rule'));
 		}
 
 		$this->beforeValidate($model);
@@ -103,10 +108,9 @@ class ConfigValidationBehavior extends ModelBehavior {
 		return $parameters;
 	}
 
-	function getValidationMessage(&$model, $rule, $field = null) {
+	public function getValidationMessage($model, $rule, $field = null) {
 		if (is_array($rule) || $rule === null) {
-			trigger_error(__('getValidationMessage() requires a argument as $rule', true));
-			return null;
+			throw new RuntimeException(__('getValidationMessage() requires a argument as $rule'));
 		}
 		if (is_array($field)) {
 			$field = null;

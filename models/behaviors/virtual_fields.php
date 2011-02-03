@@ -1,27 +1,35 @@
 <?php
 
 class VirtualFieldsBehavior extends ModelBehavior {
-	var $settins = array();
-	var $defaultSettings = array(
+
+	public $settings = array();
+	public static $defaultSettings = array(
 		'setupProperty' => true,
 		'collectionName' => 'virtualFieldsCollection',
 	);
-	var $__virtualFieldsBackup = array();
+	private $__virtualFieldsBackup = array();
 
-	function setup(&$Model, $settings = array()) {
-		$this->settings = Set::merge($this->defaultSettings, $settings);
-		extract($this->settings);
-		if (!isset($Model->{$collectionName}) && $this->settings['setupProperty']) {
+	public function setup($Model, $settings = array()) {
+
+		$this->settings[$Model->alias] = Set::merge(self::$defaultSettings, $settings);
+		extract($this->settings[$Model->alias]);
+
+		if (!isset($Model->{$collectionName}) && $this->settings[$Model->alias]['setupProperty']) {
 			$Model->{$collectionName} = array();
 		}
+
 		return true;
+
 	}
 
-	function beforeFind(&$Model, $query = array()){
-		extract($this->settings);
+	public function beforeFind($Model, $query = array()){
+
+		extract($this->settings[$Model->alias]);
+
 		if (!isset($query['virtualFields'])) {
 			return true;
 		}
+
 		$virtualFields = Set::normalize($query['virtualFields']);
 		unset($query['virtualFields']);
 
@@ -50,10 +58,12 @@ class VirtualFieldsBehavior extends ModelBehavior {
 				}
 			}
 		}
+
 		return $query;
+
 	}
 
-	function afterFind(&$Model, $results = array(), $primary = false) {
+	public function afterFind($Model, $results = array(), $primary = false) {
 		if (isset($this->__virtualFieldsBackup[$Model->alias])) {
 			$Model->virtualFields = $this->__virtualFieldsBackup[$Model->alias];
 			unset($this->__virtualFieldsBackup[$Model->alias]);
