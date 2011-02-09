@@ -355,7 +355,7 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 			$this->Model->getValidationParameter('nickname', null);
 			$this->fail('Expected Exception was not thrown');
 		} catch (Exception $e) {
-			$this->assertEqual($e->getMessage(), __('getValidationParameter(() requires 2 arguments as $field and $rule'));
+			$this->assertEqual($e->getMessage(), __d('collectionable', 'getValidationParameter() requires 2 arguments as $field and $rule'));
 		}
 
 		$this->assertNull($this->Model->getValidationParameter('nickname', 'undefined'));
@@ -373,7 +373,7 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 			$this->Model->getValidationMessage(null);
 			$this->fail('Expected Exception was not thrown');
 		} catch (Exception $e) {
-			$this->assertEqual($e->getMessage(), __('getValidationMessage() requires a argument as $rule'));
+			$this->assertEqual($e->getMessage(), __d('collectionable', 'getValidationMessage() requires a argument as $rule'));
 		}
 
 		$this->assertNull($this->Model->getValidationMessage('not defined'));

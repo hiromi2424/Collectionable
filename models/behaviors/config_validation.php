@@ -115,7 +115,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 	public function getValidationParameter($model, $field, $rule) {
 
 		if (is_array($field) || is_array($rule) || $field === null || $rule === null) {
-			throw new RuntimeException(__('getValidationParameter(() requires 2 arguments as $field and $rule'));
+			throw new RuntimeException(__d('collectionable', 'getValidationParameter() requires 2 arguments as $field and $rule'));
 		}
 
 		$this->beforeValidate($model);
@@ -140,7 +140,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 	public function getValidationMessage($model, $rule, $field = null) {
 
 		if (is_array($rule) || $rule === null) {
-			throw new RuntimeException(__('getValidationMessage() requires a argument as $rule'));
+			throw new RuntimeException(__d('collectionable', 'getValidationMessage() requires a argument as $rule'));
 		}
 
 		if (is_array($field)) {
