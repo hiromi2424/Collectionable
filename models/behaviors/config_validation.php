@@ -86,7 +86,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	function getValidationParameter(&$model, $field, $rule) {
 		if (is_array($field) || is_array($rule) || $field === null || $rule === null) {
-			trigger_error(__('getValidationParameter(() requires 2 arguments as $field and $rule', true));
+			trigger_error(__d('collectionable', 'getValidationParameter() requires 2 arguments as $field and $rule', true));
 			return null;
 		}
 
@@ -105,7 +105,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	function getValidationMessage(&$model, $rule, $field = null) {
 		if (is_array($rule) || $rule === null) {
-			trigger_error(__('getValidationMessage() requires a argument as $rule', true));
+			trigger_error(__d('collectionable', 'getValidationMessage() requires a argument as $rule', true));
 			return null;
 		}
 		if (is_array($field)) {
