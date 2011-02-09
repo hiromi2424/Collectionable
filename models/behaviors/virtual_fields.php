@@ -64,10 +64,14 @@ class VirtualFieldsBehavior extends ModelBehavior {
 	}
 
 	public function afterFind($Model, $results = array(), $primary = false) {
+
 		if (isset($this->__virtualFieldsBackup[$Model->alias])) {
 			$Model->virtualFields = $this->__virtualFieldsBackup[$Model->alias];
 			unset($this->__virtualFieldsBackup[$Model->alias]);
 		}
+
 		return true;
+
 	}
+
 }

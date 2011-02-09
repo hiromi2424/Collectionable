@@ -1,37 +1,31 @@
 <?php
 
+App::import('Model', 'VirtualFieldsUser', true, array(App::pluginPath('Collectionable') . 'tests' . DS . 'mock_models' . DS));
+
 class OptionsBehaviorMockModel extends CakeTestModel {
 	public $useTable = false;
 }
 
-if (!class_exists('VirtualFieldsUser')) {
-	class VirtualFieldsUser extends CakeTestModel {
-		public $name = 'VirtualFieldsUser';
-		public $alias = 'User';
-		public $hasMany = array(
-			'Post' => array(
-				'className' => 'VirtualFieldsPost',
-				'table' => 'Virtual_fields_posts',
-				'foreignKey' => 'user_id',
-			),
-		);
-	}
-}
 
 class OptionsBehaviorTest extends CakeTestCase {
+
 	public $Model;
 	public $fixtures = array('plugin.collectionable.virtual_fields_user', 'plugin.collectionable.virtual_fields_post');
 	public $autoFixtures = false;
 
 	public function setUp() {
+
 		$this->Model = ClassRegistry::init('OptionsBehaviorMockModel');
 		$this->_reset();
+
 	}
 
 	protected function _reset($settings = array()) {
+
 		unset($this->Model->defaultOption);
 		unset($this->Model->options);
 		$this->Model->Behaviors->attach('Collectionable.Options', $settings);
+
 	}
 
 	public function startTest($method) {
@@ -39,6 +33,7 @@ class OptionsBehaviorTest extends CakeTestCase {
 	}
 
 	public function testArguments() {
+
 		$result = $this->Model->options();
 		$expects = array();
 		$this->assertIdentical($result, $expects);
@@ -55,9 +50,11 @@ class OptionsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->defaultOption;
 		$expects = true;
 		$this->assertIdentical($result, $expects);
+
 	}
 
 	public function testDefaults() {
+
 		$this->Model->options = array(
 			'default' => array('order' => 'default'),
 			'one' => array('conditions' => array('one')),
@@ -93,6 +90,7 @@ class OptionsBehaviorTest extends CakeTestCase {
 	}
 
 	public function testMerge() {
+
 		$this->Model->options = array(
 			'one' => array('conditions' => array('one')),
 			'two' => array('order' => 'two', 'group' => 'two'),
@@ -111,9 +109,11 @@ class OptionsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->options('one', 'two', 'four');
 		$expects = array('conditions' => array('one', 'four'), 'order' => 'two', 'group' => 'four');
 		$this->assertEqual($result, $expects);
+
 	}
 
 	public function testOptions() {
+
 		$this->Model->options = array(
 			'one' => array('conditions' => array('one')),
 			'two' => array('order' => 'two', 'group' => 'two'),
@@ -171,11 +171,13 @@ class OptionsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->options('chaos');
 		$expects = array('one', 'four', 'conditions' => array('chaos', 'merging'), 'order' => 'merging');
 		$this->assertEqual($result, $expects);
+
 	}
 
 	public function testFindOptions() {
+
 		$this->loadFixtures('VirtualFieldsUser');
-		$User =& ClassRegistry::init(array('alias' => 'User', 'class' => 'VirtualFieldsUser'));
+		$User = ClassRegistry::init(array('alias' => 'User', 'class' => 'VirtualFieldsUser'));
 		$User->recursive = -1;
 		$User->options = array(
 			'limitation' => array(
@@ -191,6 +193,7 @@ class OptionsBehaviorTest extends CakeTestCase {
 			array('User' => array('id' => 2, 'first_name' => 'tanaka')),
 		);
 		$this->assertEqual($result, $expects);
+
 	}
 
 	public function testRecursiveMerge() {

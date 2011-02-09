@@ -1,21 +1,9 @@
 <?php
 
+App::import('Model', 'VirtualFieldsUser', true, array(App::pluginPath('Collectionable') . 'tests' . DS . 'mock_models' . DS));
+
 class VirtualFieldsBehaviorMockModel extends CakeTestModel {
 	public $useTable = false;
-}
-
-if (!class_exists('VirtualFieldsUser')) {
-	class VirtualFieldsUser extends CakeTestModel {
-		public $name = 'VirtualFieldsUser';
-		public $alias = 'User';
-		public $hasMany = array(
-			'Post' => array(
-				'className' => 'VirtualFieldsPost',
-				'table' => 'Virtual_fields_posts',
-				'foreignKey' => 'user_id',
-			),
-		);
-	}
 }
 
 class VirualFieldsBehaviorTest extends CakeTestCase {
@@ -35,13 +23,16 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 	}
 
 	protected function _reset($settings = array(), $model = null) {
+
 		$model = $model === null ? 'VirtualFieldsBehaviorMockModel' : $model;
 		$this->Model = ClassRegistry::init($model);
 		$this->Model->Behaviors->attach('Collectionable.VirtualFields', $settings);
-		$this->Behavior =& ClassRegistry::getObject('VirtualFieldsBehavior');
+		$this->Behavior = $this->Model->Behaviors->VirtualFields;
+
 	}
 
 	public function testUndefined() {
+
 		$virtualFields = array('not_be_defined');
 		$this->Behavior->beforeFind($this->Model, compact('virtualFields'));
 		$result = $this->Model->virtualFields;
@@ -68,9 +59,11 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->virtualFields;
 		$expects = array();
 		$this->assertEqual($result, $expects);
+
 	}
 
 	public function testFind() {
+
 		$this->_reset(false, 'VirtualFieldsUser');
 		$this->skipIf($this->db->config['driver'] !== 'mysql', "%s This tests belonges to MySQL('s SQL expression)");
 
@@ -114,9 +107,11 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->find('first', array('fields' => array('User.full_name')));
 		$expected = array('User' => array('full_name' => 'yamada ichirou'));
 		$this->assertEqual($result, $expected);
+
 	}
 
 	public function testBlackList() {
+
 		$this->Model->virtualFields = array(
 			'full_name' => "CONCAT(User.first_name, ' ', User.last_name)",
 			'posts_count' => 'COUNT(Post.id)',
@@ -138,9 +133,11 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->virtualFields;
 		$expected = array('full_name' => "CONCAT(User.first_name, ' ', User.last_name)", 'posts_count' => 'COUNT(Post.id)');
 		$this->assertEqual($result, $expected);
+
 	}
 
 	public function testSettings() {
-		
+
 	}
+
 }

@@ -79,8 +79,10 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 	}
 
 	public function startTest() {
+
 		$this->_configure();
 		$this->_attach();
+
 	}
 
 	public function endTest() {
@@ -99,8 +101,8 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 			'convertFormat' => false,
 			'' => '',
 		);
-		$this->Model->Behaviors->unload('ConfigValidation');
-		$this->Model->Behaviors->load('ConfigValidation', $settings + $defaults);
+		$this->Model->Behaviors->unload('Collectionable.ConfigValidation');
+		$this->Model->Behaviors->load('Collectionable.ConfigValidation', $settings + $defaults);
 
 	}
 
@@ -109,12 +111,15 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
-	public function _reattach() {
+	public function _reattach($settings = array()) {
+
 		$this->_clear();
-		$this->_attach();
+		$this->_attach($settings);
+
 	}
 
 	public function testAll() {
+
 		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
 		$this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model);
 
@@ -297,9 +302,11 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->Model->validate = array('hoge' => array('monyomonyo' => array('hoge' => '%s')));
 		$this->assertTrue($this->Model->Behaviors->ConfigValidation->beforeValidate($this->Model));
 		$this->assertEqual($this->Model->validate, array('hoge' => array('monyomonyo' => array('hoge' => '%s'))));
+
 	}
 
 	public function testSetValidationParameters() {
+
 		$this->Model->setValidationParameters();
 
 		$this->assertEqual($this->Model->validate['nickname']['min']['rule'], array('minlength', 10));
@@ -313,9 +320,11 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->assertEqual($this->Model->validate['nickname']['min']['rule'], array('minlength', 10));
 		$this->assertEqual($this->Model->validate['nickname']['max']['rule'], array('maxlength', 100));
 		$this->assertEqual($this->Model->validate['nickname']['multi']['rule'], array('userdefined', -100, 900));
+
 	}
 
 	public function testSetValidationMessages() {
+
 		$this->Model->setValidationMessages();
 		$this->assertEqual($this->Model->validate['nickname']['required']['message'], '必ず入力してください。');
 		$this->assertEqual($this->Model->validate['nickname']['max']['message'], '32文字');
@@ -328,16 +337,20 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->Model->setValidationMessages();
 
 		$this->assertEqual($this->Model->validate['nickname']['fuga']['message'], 'してい');
+
 	}
 
 	public function testConvertValidationFormat() {
+
 		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
 		$this->Model->convertValidationFormat();
 
 		$this->assertEqual($this->Model->validate['nickname']['moge']['message'], '5000 hoge');
+
 	}
 
 	public function testGetValidationParameter() {
+
 		try {
 			$this->Model->getValidationParameter('nickname', null);
 			$this->fail('Expected Exception was not thrown');
@@ -349,9 +362,11 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 
 		$this->assertEqual($this->Model->getValidationParameter('nickname', 'max'), 32);
 		$this->assertEqual($this->Model->getValidationParameter('nickname', 'multi'), array(-100, 900));
+
 	}
 
 	public function testGetValidationMessage() {
+
 		$this->Model->Behaviors->ConfigValidation->convertFormat = true;
 
 		try {
@@ -366,5 +381,7 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->assertEqual($this->Model->getValidationMessage('fuga'), 'でふぉると');
 		$this->assertEqual($this->Model->getValidationMessage('max'), '%s文字以内で入力してください。');
 		$this->assertEqual($this->Model->getValidationMessage('nickname', 'min'), '10文字ください');
+
 	}
+
 }
