@@ -235,7 +235,7 @@ But if you turn $overwrite property on, "specifying Model and field" forces to o
 
 		// You can specify two and more rule sets. these will be merged
 		function resetEmail($data) {
-			$this->useValidation(array('requireEmail', 'passwordConfirm'));
+			$this->useValidationSet(array('requireEmail', 'passwordConfirm'));
 		}
 
 		function confirm_password() {
