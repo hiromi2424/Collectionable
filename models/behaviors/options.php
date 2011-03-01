@@ -9,6 +9,14 @@ class OptionsBehavior extends ModelBehavior {
 		'optionName' => 'options',
 		'baseConfig' => '',
 		'baseSessionKey' => '',
+		'magick' => array(
+			'enclosure' => '!',
+			'separator' => ':',
+		),
+		'magickParams' => array(
+			'before' => '$',
+			'after' => null,
+		),
 	);
 
 	public static $defaultQuery = array(
@@ -16,9 +24,13 @@ class OptionsBehavior extends ModelBehavior {
 		'offset' => null, 'order' => null, 'page' => null, 'group' => null, 'callbacks' => true
 	);
 
+	private $__regex;
+	private $__params;
+	private $__Model;
+
 	public function setup($Model, $settings = array()) {
 
-		$this->settings[$Model->alias] = array_merge(self::$defaultSettings, (array)$settings);
+		$this->settings[$Model->alias] = Set::merge(self::$defaultSettings, (array)$settings);
 
 		$optionName = $this->settings[$Model->alias]['optionName'];
 		if ($this->settings[$Model->alias]['setupProperty']) {
@@ -85,47 +97,113 @@ class OptionsBehavior extends ModelBehavior {
 
 		}
 
-		$option = $this->_magickConvertRecursively($Model, $option);
+		$this->__Model = $Model;
+
+		$option = $this->_magickParamsRecurively($option);
+		$option = $this->_magickConvertRecursively($option);
+
+		$this->__regex = $this->__params = $this->__Model = null;
 
 		return $option;
 
 	}
 
-	protected function _magickConvertRecursively($Model, $option) {
+	protected function _magickConvertRecursively($option) {
 
 		if (!is_array($option)) {
-			return $this->_magickConvert($Model, $option);
+
+			if (null === $this->__regex) {
+				$this->__regex = sprintf('|%1$s(.+?)%1$s|', preg_quote($this->settings[$this->__Model->alias]['magick']['enclosure'], '|'));
+			}
+
+			return preg_replace_callback($this->__regex, array($this, '_magickConvert'), $option);
+
 		}
 
 		foreach ($option as $key => $val) {
-			$option[$key] = $this->_magickConvertRecursively($Model, $val);
+			$option[$key] = $this->_magickConvertRecursively($val);
 		}
 
 		return $option;
 
 	}
 
-	protected function _magickConvert($Model, $string) {
+	protected function _magickConvert($matches) {
 
-		if (!preg_match('|!(.+?)!|', $string, $matches)) {
-			return $string;
-		}
-
-		$methods = explode(':', $matches[1]);
+		$methods = explode($this->settings[$this->__Model->alias]['magick']['separator'], $matches[1]);
 		$argument = count($methods) === 1 ? '' : array_pop($methods);
 
 		foreach ($methods as $method) {
 
 			$method = $method . 'Option';
-			if (!$Model->hasMethod($method)) {
-				throw new BadMethodCallException(__d('collectionable', '%s model doesn\'t have %s() method.', $Model->name, $method));
+			if (!$this->__Model->hasMethod($method)) {
+				throw new BadMethodCallException(__d('collectionable', '%s model doesn\'t have %s() method.', $this->__Model->name, $method));
 			}
 
-			$argument = $Model->$method($argument);
+			$argument = $this->__Model->$method($argument);
 
 		}
 
 		return $argument;
+
+	}
+
+	protected function _magickParamsRecurively($option) {
+
+		if (!is_array($option)) {
+			return $this->_magickParams($option);
+		}
+
+		foreach ($option as $key => $val) {
+			$option[$key] = $this->_magickParamsRecurively($val);
+			$convertedKey = $this->_magickParams($key);
+			if ($convertedKey !== $key) {
+				if (isset($option[$convertedKey])) {
+					$option = Set::merge($option, array($convertedKey => $option[$key]));
+				} else {
+					$option[$convertedKey] = $option[$key];
+				}
+				unset($option[$key]);
+			}
+		}
+
+		return $option;
+
+	}
+
+	protected function _magickParams($string) {
+
+		if (is_numeric($string)) {
+			return $string;
+		}
+
+		$before = $this->settings[$this->__Model->alias]['magickParams']['before'];
+		$after = $this->settings[$this->__Model->alias]['magickParams']['after'];
+		if (
+			($before && strpos($string, $before) === false) ||
+			($after && strpos($string, $after) === false)
+		) {
+			return $string;
+		}
+
+		if (null === $this->__params) {
+			$this->__params = $this->_getParams();
+		}
+
+		return String::insert($string, $this->__params, $this->settings[$this->__Model->alias]['magickParams']);
+
+	}
+
+	protected function _getParams() {
+
+		$params = !empty($this->__Model->data) ? Set::flatten($this->__Model->data) : array();
+		$params = array_merge($params, array(
+			'id' => $this->__Model->id,
+			'alias' => $this->__Model->alias,
+			'name' => $this->__Model->name,
+		));
+
+		return $params;
 
 	}
 
