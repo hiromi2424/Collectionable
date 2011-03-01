@@ -7,6 +7,8 @@ class OptionsBehavior extends ModelBehavior {
 		'setupProperty' => true,
 		'defaultOption' => false,
 		'optionName' => 'options',
+		'baseConfig' => '',
+		'baseSessionKey' => '',
 	);
 
 	public static $defaultQuery = array(
@@ -25,6 +27,12 @@ class OptionsBehavior extends ModelBehavior {
 			}
 			if (empty($Model->defaultOption)) {
 				$Model->defaultOption = $this->settings[$Model->alias]['defaultOption'];
+			}
+		}
+
+		foreach (array('baseConfig', 'baseSessionKey') as $base) {
+			if (!empty($this->settings[$Model->alias][$base]) && substr($this->settings[$Model->alias][$base], -1) !== '.') {
+				$this->settings[$Model->alias][$base] .= '.';
 			}
 		}
 
@@ -67,8 +75,9 @@ class OptionsBehavior extends ModelBehavior {
 			if ($Model->defaultOption) {
 				$default = $this->_getDefault($Model, $Model->defaultOption, $Model->{$optionName});
 			}
+
 			$options = array();
-			if (isset($option[$optionName]) && !empty($option[$optionName])) {
+			if (is_array($option) && !empty($option[$optionName])) {
 				$options = $this->_intelligentlyMerge($Model, array(), $option[$optionName], $Model->{$optionName});
 				unset($option[$optionName]);
 			}
@@ -76,8 +85,61 @@ class OptionsBehavior extends ModelBehavior {
 
 		}
 
+		$option = $this->_magickConvertRecursively($Model, $option);
+
 		return $option;
 
+	}
+
+	protected function _magickConvertRecursively($Model, $option) {
+
+		if (!is_array($option)) {
+			return $this->_magickConvert($Model, $option);
+		}
+
+		foreach ($option as $key => $val) {
+			$option[$key] = $this->_magickConvertRecursively($Model, $val);
+		}
+
+		return $option;
+
+	}
+
+	protected function _magickConvert($Model, $string) {
+
+		if (!preg_match('|!(.+?)!|', $string, $matches)) {
+			return $string;
+		}
+
+		$methods = explode(':', $matches[1]);
+		$argument = count($methods) === 1 ? '' : array_pop($methods);
+
+		foreach ($methods as $method) {
+
+			$method = $method . 'Option';
+			if (!$Model->hasMethod($method)) {
+				throw new BadMethodCallException(__d('collectionable', '%s model doesn\'t have %s() method.', $Model->name, $method));
+			}
+
+			$argument = $Model->$method($argument);
+
+		}
+
+		return $argument;
+
+	}
+
+	public function configOption($Model, $configName) {
+		$baseConfig = $this->settings[$Model->alias]['baseConfig'];
+		return Configure::read($baseConfig . $configName);
+	}
+
+	public function sessionOption($Model, $sessionKey) {
+		if (!class_exists('CakeSession')) {
+			App::import('Core', 'CakeSession');
+		}
+		$baseSessionKey = $this->settings[$Model->alias]['baseSessionKey'];
+		return CakeSession::read($baseSessionKey . $sessionKey);
 	}
 
 	protected function _getDefault($Model, $defaultOption, $options) {

@@ -4,6 +4,10 @@ App::import('Model', 'VirtualFieldsUser', true, array(App::pluginPath('Collectio
 
 class OptionsBehaviorMockModel extends CakeTestModel {
 	public $useTable = false;
+
+	public function testMagickOption($argument = null) {
+		return $argument ? 'returned ' . $argument : 'test magick method';
+	}
 }
 
 
@@ -12,6 +16,8 @@ class OptionsBehaviorTest extends CakeTestCase {
 	public $Model;
 	public $fixtures = array('plugin.collectionable.virtual_fields_user', 'plugin.collectionable.virtual_fields_post');
 	public $autoFixtures = false;
+
+	protected $_backupConfig;
 
 	public function setUp() {
 
@@ -30,6 +36,13 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	public function startTest($method) {
 		$this->_reset(false);
+	}
+
+	public function endTest() {
+		Configure::delete('OptionsBehaviorTestConfig');
+		if (class_exists('CakeSession')) {
+			CakeSession::delete('OptionsBehaviorTestSession');
+		}
 	}
 
 	public function testArguments() {
@@ -197,6 +210,7 @@ class OptionsBehaviorTest extends CakeTestCase {
 	}
 
 	public function testRecursiveMerge() {
+
 		$this->Model->options = array(
 			'one' => array('conditions' => array('one')),
 			'two' => array('conditions' => array('two'), 'options' => 'one'),
@@ -212,5 +226,126 @@ class OptionsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->options('four');
 		$expects = array('one', 'two', 'three', 'four');
 		$this->assertEqual($result['conditions'], $expects);
+
 	}
+
+	public function testMagickValue() {
+
+		Configure::write('OptionsBehaviorTestConfig', 'test value');
+		$this->Model->options = array(
+			'one' => array(
+				'order' => '!config:OptionsBehaviorTestConfig!',
+			),
+		);
+		$this->assertEqual(array('order' => 'test value'), $this->Model->options('one'));
+
+		Configure::write('OptionsBehaviorTestConfig', array('testKey' => 'test value'));
+		$this->Model->options = array(
+			'one' => array(
+				'order' => '!config:OptionsBehaviorTestConfig.testKey!',
+			),
+		);
+		$this->assertEqual(array('order' => 'test value'), $this->Model->options('one'));
+
+		Configure::write('OptionsBehaviorTestConfig.testKey2', 'test value2');
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!config:OptionsBehaviorTestConfig.testKey!',
+			),
+			'two' => array(
+				'order' => '!config:OptionsBehaviorTestConfig.testKey2!',
+			),
+			'three' => array(
+				'options' => array('one', 'two'),
+			),
+		);
+		$expected = array(
+			'limit' => 'test value',
+			'order' => 'test value2',
+		);
+		$this->assertEqual($expected, $this->Model->options('three'));
+
+		Configure::write('OptionsBehaviorTestConfig', array(
+			'testKey' => 'OptionsBehaviorTestConfig.testKey2',
+			'testKey2' => 'hogehoge',
+		));
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!config:config:OptionsBehaviorTestConfig.testKey!',
+			),
+		);
+		$expected = array(
+			'limit' => 'hogehoge',
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!testMagick:argument!',
+			),
+		);
+		$expected = array(
+			'limit' => 'returned argument',
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!testMagick:!',
+			),
+		);
+		$expected = array(
+			'limit' => 'test magick method',
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!testMagick!',
+			),
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!noDefinedMethod!',
+			),
+		);
+		$this->setExpectedException('BadMethodCallException');
+		$this->Model->options('one');
+
+	}
+
+	public function testConfigOption() {
+
+		$this->assertEqual(null, $this->Model->configOption('OptionsBehaviorTestConfig.hoge'));
+
+		Configure::write('OptionsBehaviorTestConfig.hoge', 'test value');
+		$this->assertEqual('test value', $this->Model->configOption('OptionsBehaviorTestConfig.hoge'));
+
+		$this->_reset(array('baseConfig' => 'OptionsBehaviorTestConfig.'));
+		$this->assertEqual('test value', $this->Model->configOption('hoge'));
+
+		$this->_reset(array('baseConfig' => 'OptionsBehaviorTestConfig'));
+		$this->assertEqual('test value', $this->Model->configOption('hoge'));
+
+	}
+
+	public function testSessionOption() {
+
+		$this->assertEqual(null, $this->Model->sessionOption('OptionsBehaviorTestSession.hoge'));
+
+		CakeSession::write('OptionsBehaviorTestSession.hoge', 'test value');
+		$this->assertEqual('test value', $this->Model->sessionOption('OptionsBehaviorTestSession.hoge'));
+
+		$this->_reset(array('baseSessionKey' => 'OptionsBehaviorTestSession.'));
+		$this->assertEqual('test value', $this->Model->sessionOption('hoge'));
+
+		$this->_reset(array('baseSessionKey' => 'OptionsBehaviorTestSession'));
+		$this->assertEqual('test value', $this->Model->sessionOption('hoge'));
+
+	}
+
 }
