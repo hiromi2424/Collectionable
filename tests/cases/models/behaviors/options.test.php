@@ -295,6 +295,101 @@ class OptionsBehaviorTest extends CakeTestCase {
 				'limit' => '!testMagick!',
 			),
 		);
+		$expected = array(
+			'limit' => 'test magick method',
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+
+		$this->_reset(array(
+			'magick' => array(
+				'enclosure' => '%',
+			),
+		));
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '%testMagick%',
+			),
+		);
+		$expected = array(
+			'limit' => 'test magick method',
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+		$this->_reset(array(
+			'magick' => array(
+				'separator' => '->',
+			),
+		));
+		$this->Model->options = array(
+			'one' => array(
+				'limit' => '!testMagick->argument!',
+			),
+		);
+		$expected = array(
+			'limit' => 'returned argument',
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+
+		$this->Model->data = array(
+			'User' => array(
+				'id' => 1,
+				'username' => 'hiromichan',
+			),
+			'Group' => array(
+				'id' => 2,
+			),
+		);
+		$this->Model->options = array(
+			'one' => array(
+				'conditions' => array(
+					'$alias.name' => '$User.username',
+				),
+			),
+		);
+		$expected = array(
+			'conditions' => array(
+				'OptionsBehaviorMockModel.name' => 'hiromichan',
+			),
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
+		$this->Model->options = array(
+			'one' => array(
+				'conditions' => array(
+					'$name.name' => 'default',
+				),
+			),
+			'two' => array(
+				'conditions' => array(
+					'$alias.name' => '$User.username',
+				),
+				'options' => 'one',
+			),
+		);
+		$expected = array(
+			'conditions' => array(
+				'OptionsBehaviorMockModel.name' => 'hiromichan',
+			),
+		);
+		$this->assertEqual($expected, $this->Model->options('two'));
+
+
+		$this->_reset(false);
+		Configure::write('OptionsBehaviorTestConfig.Group.role.2', 'admin');
+		$this->Model->options = array(
+			'one' => array(
+				'conditions' => array(
+					'Group.role' => '!config:OptionsBehaviorTestConfig.Group.role.$Group.id!',
+				),
+			),
+		);
+		$expected = array(
+			'conditions' => array(
+				'Group.role' => 'admin',
+			),
+		);
 		$this->assertEqual($expected, $this->Model->options('one'));
 
 

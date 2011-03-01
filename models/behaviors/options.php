@@ -9,6 +9,14 @@ class OptionsBehavior extends ModelBehavior {
 		'optionName' => 'options',
 		'baseConfig' => '',
 		'baseSessionKey' => '',
+		'magick' => array(
+			'enclosure' => '!',
+			'separator' => ':',
+		),
+		'magickParams' => array(
+			'before' => '$',
+			'after' => null,
+		),
 	);
 
 	var $defaultQuery = array(
@@ -16,8 +24,13 @@ class OptionsBehavior extends ModelBehavior {
 		'offset' => null, 'order' => null, 'page' => null, 'group' => null, 'callbacks' => true
 	);
 
+	var $__regex;
+	var $__params;
+	var $__Model;
+
 	function setup(&$Model, $settings = array()) {
-		$this->settings[$Model->alias] = array_merge($this->defaultSettings, (array)$settings);
+		$this->settings[$Model->alias] = Set::merge($this->defaultSettings, (array)$settings);
+
 		$optionName = $this->settings[$Model->alias]['optionName'];
 		if ($this->settings[$Model->alias]['setupProperty']) {
 			if (empty($Model->{$optionName})) {
@@ -75,40 +88,106 @@ class OptionsBehavior extends ModelBehavior {
 			$option = Set::merge($default, $options, $option);
 		}
 
-		$option = $this->_magickConvertRecursively($Model, $option);
+		$this->__Model =& $Model;
+
+		$option = $this->_magickParamsRecurively($option);
+		$option = $this->_magickConvertRecursively($option);
+
+		$this->__regex = $this->__params = null;
 
 		return $option;
 	}
 
-	function _magickConvertRecursively(&$Model, $option) {
+	function _magickConvertRecursively($option) {
 
 		if (!is_array($option)) {
-			return $this->_magickConvert($Model, $option);
+
+			if (null === $this->__regex) {
+				$this->__regex = sprintf('|%1$s(.+?)%1$s|', preg_quote($this->settings[$this->__Model->alias]['magick']['enclosure'], '|'));
+			}
+
+			return preg_replace_callback($this->__regex, array($this, '_magickConvert'), $option);
+
 		}
 
 		foreach ($option as $key => $val) {
-			$option[$key] = $this->_magickConvertRecursively($Model, $val);
+			$option[$key] = $this->_magickConvertRecursively($val);
 		}
 
 		return $option;
 
 	}
 
-	function _magickConvert(&$Model, $string) {
+	function _magickConvert($matches) {
 
-		if (!preg_match('|!(.+?)!|', $string, $matches)) {
-			return $string;
-		}
-
-		$methods = explode(':', $matches[1]);
+		$methods = explode($this->settings[$this->__Model->alias]['magick']['separator'], $matches[1]);
 		$argument = count($methods) === 1 ? '' : array_pop($methods);
 
 		foreach ($methods as $method) {
 			$method = $method . 'Option';
-			$argument = $Model->$method($argument);
+			$argument = $this->__Model->$method($argument);
 		}
 
 		return $argument;
+
+	}
+
+	function _magickParamsRecurively($option) {
+
+		if (!is_array($option)) {
+			return $this->_magickParams($option);
+		}
+
+		foreach ($option as $key => $val) {
+			$option[$key] = $this->_magickParamsRecurively($val);
+			$convertedKey = $this->_magickParams($key);
+			if ($convertedKey !== $key) {
+				if (isset($option[$convertedKey])) {
+					$option = Set::merge($option, array($convertedKey => $option[$key]));
+				} else {
+					$option[$convertedKey] = $option[$key];
+				}
+				unset($option[$key]);
+			}
+		}
+
+		return $option;
+
+	}
+
+	function _magickParams($string) {
+
+		if (is_numeric($string)) {
+			return $string;
+		}
+
+		$before = $this->settings[$this->__Model->alias]['magickParams']['before'];
+		$after = $this->settings[$this->__Model->alias]['magickParams']['after'];
+		if (
+			($before && strpos($string, $before) === false) ||
+			($after && strpos($string, $after) === false)
+		) {
+			return $string;
+		}
+
+		if (null === $this->__params) {
+			$this->__params = $this->_getParams();
+		}
+
+		return String::insert($string, $this->__params, $this->settings[$this->__Model->alias]['magickParams']);
+
+	}
+
+	function _getParams() {
+
+		$params = !empty($this->__Model->data) ? Set::flatten($this->__Model->data) : array();
+		$params = array_merge($params, array(
+			'id' => $this->__Model->id,
+			'alias' => $this->__Model->alias,
+			'name' => $this->__Model->name,
+		));
+
+		return $params;
 
 	}
 
