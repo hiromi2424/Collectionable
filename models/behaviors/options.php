@@ -183,6 +183,7 @@ class OptionsBehavior extends ModelBehavior {
 		$params = !empty($this->__Model->data) ? Set::flatten($this->__Model->data) : array();
 		$params = array_merge($params, array(
 			'id' => $this->__Model->id,
+			'primaryKey' => $this->__Model->primaryKey,
 			'alias' => $this->__Model->alias,
 			'name' => $this->__Model->name,
 		));

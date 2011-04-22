@@ -399,6 +399,20 @@ class OptionsBehaviorTest extends CakeTestCase {
 			),
 		);
 
+		$this->Model->options = array(
+			'one' => array(
+				'conditions' => array(
+					'$alias.$primaryKey' => 1,
+				),
+			),
+		);
+		$expected = array(
+			'conditions' => array(
+				'OptionsBehaviorMockModel.id' => 1,
+			),
+		);
+		$this->assertEqual($expected, $this->Model->options('one'));
+
 	}
 
 	function testConfigOption() {
