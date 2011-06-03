@@ -214,7 +214,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	public function sessionOption($Model, $sessionKey) {
 		if (!class_exists('CakeSession')) {
-			App::import('Core', 'CakeSession');
+			App::uses('CakeSession', 'Model/Datasource');
 		}
 		$baseSessionKey = $this->settings[$Model->alias]['baseSessionKey'];
 		return CakeSession::read($baseSessionKey . $sessionKey);

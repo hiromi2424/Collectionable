@@ -1,11 +1,5 @@
 <?php
 
-App::import('Model', 'VirtualFieldsUser', true, array(App::pluginPath('Collectionable') . 'tests' . DS . 'mock_models' . DS));
-
-class VirtualFieldsBehaviorMockModel extends CakeTestModel {
-	public $useTable = false;
-}
-
 class VirualFieldsBehaviorTest extends CakeTestCase {
 
 	public $Behavior;
@@ -25,7 +19,7 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 	protected function _reset($settings = array(), $model = null) {
 
 		$model = $model === null ? 'VirtualFieldsBehaviorMockModel' : $model;
-		$this->Model = ClassRegistry::init($model);
+		$this->Model = ClassRegistry::init('Collectionable.' . $model, 'TestSuite/Mock');
 		$this->Model->Behaviors->attach('Collectionable.VirtualFields', $settings);
 		$this->Behavior = $this->Model->Behaviors->VirtualFields;
 
@@ -65,7 +59,7 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 	public function testFind() {
 
 		$this->_reset(false, 'VirtualFieldsUser');
-		$this->skipIf($this->db->config['driver'] !== 'mysql', "%s This tests belonges to MySQL('s SQL expression)");
+		$this->skipIf(!preg_match('|Mysql|i', $this->db->config['datasource']), "%s This tests belonges to MySQL('s SQL expression)");
 
 		$this->Model->virtualFields = array(
 			'full_name' => "CONCAT(User.first_name, ' ', User.last_name)",

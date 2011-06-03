@@ -1,27 +1,19 @@
 <?php
 
-App::import('Model', 'VirtualFieldsUser', true, array(App::pluginPath('Collectionable') . 'tests' . DS . 'mock_models' . DS));
-
-class OptionsBehaviorMockModel extends CakeTestModel {
-	public $useTable = false;
-
-	public function testMagickOption($argument = null) {
-		return $argument ? 'returned ' . $argument : 'test magick method';
-	}
-}
-
-
 class OptionsBehaviorTest extends CakeTestCase {
 
 	public $Model;
-	public $fixtures = array('plugin.collectionable.virtual_fields_user', 'plugin.collectionable.virtual_fields_post');
+	public $fixtures = array(
+		'plugin.collectionable.virtual_fields_user',
+		'plugin.collectionable.virtual_fields_post',
+	);
 	public $autoFixtures = false;
 
 	protected $_backupConfig;
 
 	public function setUp() {
 
-		$this->Model = ClassRegistry::init('OptionsBehaviorMockModel');
+		$this->Model = ClassRegistry::init('Collectionable.OptionsBehaviorMockModel', 'TestSuite/Mock');
 		$this->_reset();
 
 	}
