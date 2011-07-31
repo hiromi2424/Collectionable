@@ -162,7 +162,10 @@ class ConfigValidationBehavior extends ModelBehavior {
 		$this->beforeValidate($model);
 
 		if (empty($model->validate[$field][$rule]['message'])) {
-			return null;
+			if (empty($model->validate[$field][$rule]['rule'][0])) {
+				return null;
+			}
+			return $rule;
 		}
 
 		return $model->validate[$field][$rule]['message'];
