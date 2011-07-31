@@ -340,5 +340,10 @@ class ConfigValidationBehaviorTestCase extends CakeTestCase {
 		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'fuga'), 'でふぉると');
 		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'max'), '%s文字以内で入力してください。');
 		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'nickname', 'min'), '10文字ください');
+
+		$this->Model->validate['nickname']['emptyMessage'] = array(
+			'rule' => array('ruleName'),
+		);
+		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'nickname', 'emptyMessage'), 'emptyMessage');
 	}
 }
