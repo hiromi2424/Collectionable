@@ -102,6 +102,10 @@ class OptionsBehavior extends ModelBehavior {
 
 		if (!is_array($option)) {
 
+			if ($this->_shouldSkip($option)) {
+				return $option;
+			}
+
 			if (null === $this->__regex) {
 				$this->__regex = sprintf('|%1$s(.+?)%1$s|', preg_quote($this->settings[$this->__Model->alias]['magick']['enclosure'], '|'));
 			}
@@ -155,9 +159,13 @@ class OptionsBehavior extends ModelBehavior {
 
 	}
 
+	function _shouldSkip($value) {
+		return is_numeric($value) || is_bool($value) || is_null($value);
+	}
+
 	function _magickParams($string) {
 
-		if (is_numeric($string)) {
+		if ($this->_shouldSkip($string)) {
 			return $string;
 		}
 

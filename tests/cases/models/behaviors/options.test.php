@@ -413,6 +413,20 @@ class OptionsBehaviorTest extends CakeTestCase {
 		);
 		$this->assertEqual($expected, $this->Model->options('one'));
 
+		$this->Model->options = array(
+			'one' => array(
+				'conditions' => array(
+					'nullValue' => null,
+				),
+			),
+		);
+		$expected = array(
+			'conditions' => array(
+				'nullValue' => null,
+			),
+		);
+		$this->assertIdentical($expected, $this->Model->options('one'));
+
 	}
 
 	function testConfigOption() {
