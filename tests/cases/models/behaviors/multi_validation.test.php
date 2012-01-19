@@ -1,6 +1,6 @@
 <?php
 
-class MultiValidaitonMockModel extends CakeTestModel {
+class MultiValidaitonTestModel extends CakeTestModel {
 
 	var $useTable = false;
 	var $validate = array(
@@ -34,10 +34,12 @@ class MultiValidaitonMockModel extends CakeTestModel {
 
 }
 
+Mock::generatePartial('MultiValidaitonTestModel', null, array('validates', 'useValidationSet'));
+
 class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	var $data = array(
-		'MultiValidaitonMockModel' => array(
+		'MultiValidaitonTestModel' => array(
 			'nickname' => '0123456789012',
 		),
 	);
@@ -52,7 +54,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	function _attach($settings = array()) {
 
-		$this->Model = ClassRegistry::init('MultiValidaitonMockModel');
+		$this->Model = ClassRegistry::init('MultiValidaitonTestModel');
 		$this->Model->Behaviors->detach('Collectionable.MultiValidation');
 		$this->Model->Behaviors->attach('Collectionable.MultiValidation', $settings);
 
@@ -170,6 +172,34 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		);
 		$this->assertIdentical($this->Model->validate, $expected);
 
+	}
+
+	function _prepareMock() {
+		$model =& ClassRegistry::init('MockMultiValidaitonTestModel');
+		$model->__construct();
+		$model->Behaviors->attach('Collectionable.MultiValidation');
+		return $model;
+	}
+
+	function testValidatesFor() {
+		$model = $this->_prepareMock();
+		$model->expectOnce('useValidationSet', array('bestAnswer', true));
+		$model->expectOnce('validates', array(array()));
+		$model->validatesFor('bestAnswer');
+	}
+
+	function testValidatesFor_useBaseOption() {
+		$model = $this->_prepareMock();
+		$model->expectOnce('useValidationSet', array('bestAnswer', false));
+		$model->expectOnce('validates', array(array()));
+		$model->validatesFor('bestAnswer', array('useBase' => false));
+	}
+
+	function testValidatesFor_booleanOptions() {
+		$model = $this->_prepareMock();
+		$model->expectOnce('useValidationSet', array('bestAnswer', false));
+		$model->expectOnce('validates', array(array()));
+		$model->validatesFor('bestAnswer', false);
 	}
 
 }
