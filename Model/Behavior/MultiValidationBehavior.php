@@ -89,6 +89,23 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	}
 
+	function validatesFor($Model, $set, $options = array()) {
+		$useBase = true;
+		if (is_bool($options)) {
+			$useBase = $options;
+			$options = array();
+		} else {
+			if (isset($options['useBase'])) {
+				$useBase = $options['useBase'];
+				unset($options['useBase']);
+			}
+			unset($options['useBase']);
+		}
+
+		$Model->useValidationSet($set, $useBase);
+		return $Model->validates($options);
+	}
+
 }
 
 class MultiValidation_PropertyNotFoundException extends Exception {

@@ -203,4 +203,54 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	}
 
+	function _prepareMock() {
+		$modelClass = $this->getMockClass('MultiValidaitonMockModel', array(
+			'validates',
+			'useValidationSet',
+		));
+		$model = ClassRegistry::init($modelClass);
+		$model->__construct();
+		$model->Behaviors->attach('Collectionable.MultiValidation');
+		return $model;
+	}
+
+	function testValidatesFor() {
+		$model = $this->_prepareMock();
+		$model->expects($this->once())
+			->method('useValidationSet')
+			->with('bestAnswer', true)
+		;
+		$model->expects($this->once())
+			->method('validates')
+			->with(array())
+		;
+		$model->validatesFor('bestAnswer');
+	}
+
+	function testValidatesFor_useBaseOption() {
+		$model = $this->_prepareMock();
+		$model->expects($this->once())
+			->method('useValidationSet')
+			->with('bestAnswer', false)
+		;
+		$model->expects($this->once())
+			->method('validates')
+			->with(array())
+		;
+		$model->validatesFor('bestAnswer', array('useBase' => false));
+	}
+
+	function testValidatesFor_booleanOptions() {
+		$model = $this->_prepareMock();
+		$model->expects($this->once())
+			->method('useValidationSet')
+			->with('bestAnswer', false)
+		;
+		$model->expects($this->once())
+			->method('validates')
+			->with(array())
+		;
+		$model->validatesFor('bestAnswer', false);
+	}
+
 }
