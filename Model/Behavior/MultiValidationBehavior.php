@@ -5,6 +5,7 @@ class MultiValidationBehavior extends ModelBehavior {
 	public $settings = array();
 	public static $defaultSettings = array(
 		'restore' => true,
+		'saveOptionName' => 'validator',
 	);
 
 	public $mapMethods = array(
@@ -104,6 +105,22 @@ class MultiValidationBehavior extends ModelBehavior {
 
 		$Model->useValidationSet($set, $useBase);
 		return $Model->validates($options);
+	}
+
+	function beforeValidate($Model, $options = array()) {
+		$optionName = $this->settings[$Model->alias]['saveOptionName'];
+
+		if (isset($options[$optionName])) {
+			$base = true;
+			if (is_array($options[$optionName]) && is_bool($end = end($options[$optionName]))) {
+				$base = $end;
+				array_pop($options[$optionName]);
+			}
+			$Model->useValidationSet($options[$optionName], $base);
+			unset($options[$optionName]);
+		}
+
+		return true;
 	}
 
 }

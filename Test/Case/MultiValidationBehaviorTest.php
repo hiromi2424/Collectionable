@@ -203,11 +203,17 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	}
 
-	function _prepareMock() {
-		$modelClass = $this->getMockClass('MultiValidaitonMockModel', array(
-			'validates',
-			'useValidationSet',
-		));
+	function _prepareMock($mock = 'default') {
+		$methods = array(
+			'default' => array(
+				'validates',
+				'useValidationSet',
+			),
+			'beforeValidate' => array(
+				'useValidationSet',
+			),
+		);
+		$modelClass = $this->getMockClass('MultiValidaitonMockModel', $methods[$mock]);
 		$model = ClassRegistry::init($modelClass);
 		$model->__construct();
 		$model->Behaviors->attach('Collectionable.MultiValidation');
@@ -251,6 +257,24 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 			->with(array())
 		;
 		$model->validatesFor('bestAnswer', false);
+	}
+
+	function testBeforeValidate() {
+		$model = $this->_prepareMock('beforeValidate');
+		$model->expects($this->once())
+			->method('useValidationSet')
+			->with('edit', true)
+		;
+		$model->validates(array('validator' => 'edit'));
+	}
+
+	function testBeforeValidate_useBaseOption() {
+		$model = $this->_prepareMock('beforeValidate');
+		$model->expects($this->once())
+			->method('useValidationSet')
+			->with(array('edit'), false)
+		;
+		$model->validates(array('validator' => array('edit', false)));
 	}
 
 }
