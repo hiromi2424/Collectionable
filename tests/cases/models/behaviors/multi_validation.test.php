@@ -35,6 +35,7 @@ class MultiValidaitonTestModel extends CakeTestModel {
 }
 
 Mock::generatePartial('MultiValidaitonTestModel', null, array('validates', 'useValidationSet'));
+Mock::generatePartial('MultiValidaitonTestModel', 'MultiValidaitonBeforeValidateTestModel', array('useValidationSet'));
 
 class MultiValidationBehaviorTestCase extends CakeTestCase {
 
@@ -174,8 +175,8 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	}
 
-	function _prepareMock() {
-		$model =& ClassRegistry::init('MockMultiValidaitonTestModel');
+	function _prepareMock($modelClass = 'MockMultiValidaitonTestModel') {
+		$model =& ClassRegistry::init($modelClass);
 		$model->__construct();
 		$model->Behaviors->attach('Collectionable.MultiValidation');
 		return $model;
@@ -200,6 +201,18 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		$model->expectOnce('useValidationSet', array('bestAnswer', false));
 		$model->expectOnce('validates', array(array()));
 		$model->validatesFor('bestAnswer', false);
+	}
+
+	function testBeforeValidate() {
+		$model = $this->_prepareMock('MultiValidaitonBeforeValidateTestModel');
+		$model->expectOnce('useValidationSet', array('edit', true));
+		$model->validates(array('validator' => 'edit'));
+	}
+
+	function testBeforeValidate_useBaseOption() {
+		$model = $this->_prepareMock('MultiValidaitonBeforeValidateTestModel');
+		$model->expectOnce('useValidationSet', array(array('edit'), false));
+		$model->validates(array('validator' => array('edit', false)));
 	}
 
 }
