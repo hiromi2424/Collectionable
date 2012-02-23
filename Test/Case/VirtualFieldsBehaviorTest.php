@@ -57,6 +57,49 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 
 	}
 
+	public function testOverrideVirturlField() {
+
+		$virtualFields = array('user_count' => 'COUNT(User.id)');
+		$this->Behavior->beforeFind($this->Model, compact('virtualFields'));
+		$result = $this->Model->virtualFields;
+		$expects = array('user_count' => 'COUNT(User.id)');
+		$this->assertEqual($result, $expects);
+
+		$this->Behavior->afterFind($this->Model);
+		$this->assertEqual($this->Model->virtualFields, array());
+
+		$this->Model->virtualFields = array(
+			'full_name' => "CONCAT(User.first_name, ' ', User.last_name)",
+		);
+		$virtualFields = array('full_name' => "CONCAT(User.last_name, ' ', User.first_name)",);
+		$this->Behavior->beforeFind($this->Model, compact('virtualFields'));
+		$result = $this->Model->virtualFields;
+		$expects = array('full_name' => "CONCAT(User.last_name, ' ', User.first_name)");
+		$this->assertEqual($result, $expects);
+
+		$this->Behavior->afterFind($this->Model);
+		$this->assertEqual($this->Model->virtualFields, array(
+			'full_name' => "CONCAT(User.first_name, ' ', User.last_name)",
+		));
+
+		$this->Model->virtualFields = array();
+		$this->Model->virtualFieldsCollection = array(
+			'posts_count' => 'COUNT(Post.id)',
+		);
+		$virtualFields = array('posts_count' => 'SUM(Post.id)');
+		$this->Behavior->beforeFind($this->Model, compact('virtualFields'));
+		$result = $this->Model->virtualFields;
+		$expects = array('posts_count' => 'SUM(Post.id)');
+		$this->assertEqual($result, $expects);
+
+		$this->Behavior->afterFind($this->Model);
+		$this->assertEqual($this->Model->virtualFields, array());
+		$this->assertEqual($this->Model->virtualFieldsCollection, array(
+			'posts_count' => 'COUNT(Post.id)',
+		));
+
+	}
+
 	public function testFind() {
 
 		$this->_reset(false, 'VirtualFieldsUser');
