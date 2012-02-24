@@ -19,7 +19,9 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	protected function _attach($settings = array()) {
 
-		$this->Model = ClassRegistry::init('Collectionable.MultiValidaitonMockModel', 'TestSuite/Mock');
+		App::uses('Model', 'Model');
+		App::import('TestSuite/Mock', 'Collectionable.MultiValidaitonMockModel');
+		$this->Model = ClassRegistry::init('MultiValidaitonMockModel');
 		$this->Model->Behaviors->unload('Collectionable.MultiValidation');
 		$this->Model->Behaviors->load('Collectionable.MultiValidation', $settings);
 

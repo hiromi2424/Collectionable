@@ -19,7 +19,8 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 	protected function _reset($settings = array(), $model = null) {
 
 		$model = $model === null ? 'VirtualFieldsBehaviorMockModel' : $model;
-		$this->Model = ClassRegistry::init('Collectionable.' . $model, 'TestSuite/Mock');
+		App::import('TestSuite/Mock', 'Collectionable.' . $model);
+		$this->Model = ClassRegistry::init($model);
 		$this->Model->Behaviors->attach('Collectionable.VirtualFields', $settings);
 		$this->Behavior = $this->Model->Behaviors->VirtualFields;
 
@@ -69,7 +70,7 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 		);
 		$this->Model->recursive = -1;
 
-		$result = $this->Model->find('first', array('fields' => array('User.full_name')));
+		$result = $this->Model->find('first', array('fields' => array('full_name')));
 		$expected = array('User' => array('full_name' => 'yamada ichirou'));
 		$this->assertEqual($result, $expected);
 

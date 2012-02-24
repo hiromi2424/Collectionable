@@ -13,7 +13,9 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	public function setUp() {
 
-		$this->Model = ClassRegistry::init('Collectionable.OptionsBehaviorMockModel', 'TestSuite/Mock');
+		App::uses('Model', 'Model');
+		App::import('TestSuite/Mock', 'Collectionable.OptionsBehaviorMockModel');
+		$this->Model = ClassRegistry::init('OptionsBehaviorMockModel');
 		$this->_reset();
 
 	}

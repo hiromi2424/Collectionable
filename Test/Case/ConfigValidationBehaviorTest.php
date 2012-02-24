@@ -55,8 +55,9 @@ class ConfigValidationBehaviorTest extends CakeTestCase {
 	}
 
 	public function _attach($settings = array()) {
-
-		$this->Model = ClassRegistry::init('Collectionable.ConfigValidaitonMockModel', 'TestSuite/Mock');
+		App::uses('Model', 'Model');
+		App::import('TestSuite/Mock', 'Collectionable.ConfigValidaitonMockModel');
+		$this->Model = ClassRegistry::init('ConfigValidaitonMockModel');
 		$defaults = array(
 			'configName' => 'TestValidation',
 			'convertFormat' => false,
@@ -346,7 +347,7 @@ class ConfigValidationBehaviorTest extends CakeTestCase {
 		$this->Model->validate['nickname']['emptyMessage'] = array(
 			'rule' => array('ruleName'),
 		);
-		$this->assertEqual($this->Behavior->getValidationMessage($this->Model, 'nickname', 'emptyMessage'), 'emptyMessage');
+		$this->assertEqual($this->Model->Behaviors->ConfigValidation->getValidationMessage($this->Model, 'nickname', 'emptyMessage'), 'emptyMessage');
 
 	}
 
