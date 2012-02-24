@@ -41,7 +41,7 @@ class VirtualFieldsBehavior extends ModelBehavior {
 				} else {
 					unset($virtualFields[$key]);
 				}
-			} else if (!empty($sql)) {
+			} elseif (!empty($sql)) {
 				$virtualFields[$key] = $sql;
 			} else {
 				$blackList[] = $key;

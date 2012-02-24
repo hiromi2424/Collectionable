@@ -57,7 +57,7 @@ class VirualFieldsBehaviorTest extends CakeTestCase {
 
 	}
 
-	public function testOverrideVirturlField() {
+	public function testDynamicVirtualField() {
 
 		$virtualFields = array('user_count' => 'COUNT(User.id)');
 		$this->Behavior->beforeFind($this->Model, compact('virtualFields'));
