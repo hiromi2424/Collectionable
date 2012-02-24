@@ -111,6 +111,16 @@ You can use them by like:
 			$user = $this->User->find('first', compact('virtualFields'));
 			$this->set(compact('user'));
 		}
+
+		public function profile_ja() {
+			// The order of parts for person name in Japanese is alternative compared with English.
+			$virtualFields = array(
+				'full_name' => "CONCAT(User.last_name, ' ', User.first_name)", // overriding
+				'phonetic_full_name' => "CONCAT(User.phonetic_last_name, ' ', User.phonetic_first_name)", // dynamic adding
+			);
+			$user = $this->User->find('first', compact('virtualFields'));
+			$this->set(compact('user'));
+		}
 	}
 
 
