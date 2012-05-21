@@ -203,7 +203,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 
 	}
 
-	function _prepareMock($mock = 'default') {
+	protected function _prepareMock($mock = 'default') {
 		$methods = array(
 			'default' => array(
 				'validates',
@@ -220,7 +220,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		return $model;
 	}
 
-	function testValidatesFor() {
+	public function testValidatesFor() {
 		$model = $this->_prepareMock();
 		$model->expects($this->once())
 			->method('useValidationSet')
@@ -233,7 +233,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		$model->validatesFor('bestAnswer');
 	}
 
-	function testValidatesFor_useBaseOption() {
+	public function testValidatesFor_useBaseOption() {
 		$model = $this->_prepareMock();
 		$model->expects($this->once())
 			->method('useValidationSet')
@@ -246,7 +246,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		$model->validatesFor('bestAnswer', array('useBase' => false));
 	}
 
-	function testValidatesFor_booleanOptions() {
+	public function testValidatesFor_booleanOptions() {
 		$model = $this->_prepareMock();
 		$model->expects($this->once())
 			->method('useValidationSet')
@@ -259,7 +259,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		$model->validatesFor('bestAnswer', false);
 	}
 
-	function testBeforeValidate() {
+	public function testBeforeValidate() {
 		$model = $this->_prepareMock('beforeValidate');
 		$model->expects($this->once())
 			->method('useValidationSet')
@@ -268,7 +268,7 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		$model->validates(array('validator' => 'edit'));
 	}
 
-	function testBeforeValidate_useBaseOption() {
+	public function testBeforeValidate_useBaseOption() {
 		$model = $this->_prepareMock('beforeValidate');
 		$model->expects($this->once())
 			->method('useValidationSet')

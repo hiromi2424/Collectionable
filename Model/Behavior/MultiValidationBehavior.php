@@ -90,7 +90,7 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	}
 
-	function validatesFor($Model, $set, $options = array()) {
+	public function validatesFor($Model, $set, $options = array()) {
 		$useBase = true;
 		if (is_bool($options)) {
 			$useBase = $options;
@@ -107,7 +107,7 @@ class MultiValidationBehavior extends ModelBehavior {
 		return $Model->validates($options);
 	}
 
-	function beforeValidate($Model, $options = array()) {
+	public function beforeValidate($Model, $options = array()) {
 		$optionName = $this->settings[$Model->alias]['saveOptionName'];
 
 		if (isset($options[$optionName])) {
