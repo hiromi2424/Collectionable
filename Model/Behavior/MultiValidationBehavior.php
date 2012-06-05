@@ -42,7 +42,7 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	public function useValidationSet($Model, $method, $useBase = true) {
 
-		if (is_array($method) || !preg_match(key($this->mapMethods), $method, $matches)) {
+		if (is_array($method) || !preg_match(current(array_keys($this->mapMethods)), $method, $matches)) {
 			$validates = array_map('ucfirst', (array)$method);
 		} else {
 			$validates = explode('And', $matches[1]);
