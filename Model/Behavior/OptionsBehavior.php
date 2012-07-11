@@ -93,7 +93,7 @@ class OptionsBehavior extends ModelBehavior {
 				$options = $this->_intelligentlyMerge($Model, array(), $option[$optionName], $Model->{$optionName});
 				unset($option[$optionName]);
 			}
-			$option = Set::merge($default, $options, $option);
+			$option = Set::merge(Set::merge($default, $options), $option);
 
 		}
 
