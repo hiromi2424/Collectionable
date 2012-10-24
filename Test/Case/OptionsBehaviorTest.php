@@ -437,4 +437,13 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	}
 
+	public function testOptionsReturnOriginalValue() {
+		$this->Model->options = array(
+			'one' => array('conditions' => array('one' => true, 'two' => 2, 'three' => '3')),
+		);
+		$expects = array('one' => true, 'two' => 2, 'three' => '3');
+
+		$result = $this->Model->options('one');
+		$this->assertSame($expects, $result['conditions']);
+	}
 }

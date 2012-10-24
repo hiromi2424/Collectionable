@@ -110,7 +110,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	protected function _magickConvertRecursively($option) {
 
-		if (!is_array($option)) {
+		if (is_string($option)) {
 
 			if (null === $this->__regex) {
 				$this->__regex = sprintf('|%1$s(.+?)%1$s|', preg_quote($this->settings[$this->__Model->alias]['magick']['enclosure'], '|'));
@@ -120,8 +120,10 @@ class OptionsBehavior extends ModelBehavior {
 
 		}
 
-		foreach ($option as $key => $val) {
-			$option[$key] = $this->_magickConvertRecursively($val);
+		if (is_array($option)) {
+			foreach ($option as $key => $val) {
+				$option[$key] = $this->_magickConvertRecursively($val);
+			}
 		}
 
 		return $option;
