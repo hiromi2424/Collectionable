@@ -19,7 +19,7 @@ Here is a simple Post Model.
 		public $hasMany = array('Comment');
 		public $hasOne = array('Status');
 
-		public $acsAs = array('Collectionable.options');
+		public $acsAs = array('Collectionable.Options');
 		public $defaultOption = true; // or string like 'default'
 
 		public $options =array(
