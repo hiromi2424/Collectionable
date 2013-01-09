@@ -74,28 +74,26 @@ class OptionsBehavior extends ModelBehavior {
 			$type = $args;
 		}
 
+		$optionName = $this->settings[$Model->alias]['optionName'];
+		$default = array();
+		if ($Model->defaultOption) {
+			$default = $this->_getDefault($Model, $Model->defaultOption, $Model->{$optionName});
+		}
+
 		$option = array();
 		if (is_array($type)) {
-			foreach ($type as $t) {
-				$option = Set::merge($option, $this->options($Model, $t));
-			}
+			$options = $this->_intelligentlyMerge($Model, array(), $type, $Model->{$optionName});
 		} else {
-
-			$optionName = $this->settings[$Model->alias]['optionName'];
 			$option = isset($Model->{$optionName}[$type]) ? $Model->{$optionName}[$type] : array();
-			$default = array();
-			if ($Model->defaultOption) {
-				$default = $this->_getDefault($Model, $Model->defaultOption, $Model->{$optionName});
-			}
 
 			$options = array();
 			if (is_array($option) && !empty($option[$optionName])) {
 				$options = $this->_intelligentlyMerge($Model, array(), $option[$optionName], $Model->{$optionName});
 				unset($option[$optionName]);
 			}
-			$option = Set::merge(Set::merge($default, $options), $option);
 
 		}
+		$option = Set::merge(Set::merge($default, $options), $option);
 
 		$this->__Model = $Model;
 

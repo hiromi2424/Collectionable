@@ -223,6 +223,36 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	}
 
+	public function testMultiMergeWithDefault() {
+
+		$this->Model->defaultOption = true;
+		$this->Model->options = array(
+			'default' => array(
+				'limit' => 10,
+				'order' => 'Foo.id DESC',
+			),
+			'unlimited' => array(
+				'limit' => null,
+			),
+			'another' => array(
+				'conditions' => array(
+					'Foo.status' => 1,
+				),
+			),
+		);
+
+		$result = $this->Model->options(array('unlimited', 'another'));
+		$expects = array(
+			'limit' => null,
+			'order' => 'Foo.id DESC',
+			'conditions' => array(
+				'Foo.status' => 1,
+			),
+		);
+		$this->assertEqual($result, $expects);
+
+	}
+
 	public function testMagickValue() {
 
 		Configure::write('OptionsBehaviorTestConfig', 'test value');
