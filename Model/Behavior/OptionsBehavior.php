@@ -17,6 +17,7 @@ class OptionsBehavior extends ModelBehavior {
 			'before' => '$',
 			'after' => null,
 		),
+		'autoDefault' => false,
 	);
 
 	public static $defaultQuery = array(
@@ -55,8 +56,9 @@ class OptionsBehavior extends ModelBehavior {
 	public function beforeFind($Model, $query = array()) {
 
 		$optionName = $this->settings[$Model->alias]['optionName'];
-		if (isset($query[$optionName])) {
-			$options = $query[$optionName];
+		$autoDefault = $this->settings[$Model->alias]['autoDefault'];
+		if (isset($query[$optionName]) || $autoDefault) {
+			$options = isset($query[$optionName]) ? $query[$optionName]: array();
 			unset($query[$optionName]);
 
 			$query = Set::merge(self::$defaultQuery, $this->options($Model, $options), Set::filter($query));

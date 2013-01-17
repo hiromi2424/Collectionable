@@ -96,6 +96,35 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	}
 
+	public function testAutoDefault() {
+
+		$this->loadFixtures('VirtualFieldsUser');
+		$User = ClassRegistry::init(array('alias' => 'User', 'class' => 'VirtualFieldsUser'));
+		$User->defaultOption = true;
+		$User->options = array(
+			'default' => array(
+				'conditions' => array(
+					'id' => 3,
+				),
+			)
+		);
+
+		$User->Behaviors->load('Collectionable.Options', array(
+			'autoDefault' => false,
+		));
+		$result = $User->find('count');
+		$expects = 4;
+		$this->assertEqual($result, $expects);
+
+		$User->Behaviors->load('Collectionable.Options', array(
+			'autoDefault' => true,
+		));
+		$result = $User->find('count');
+		$expects = 1;
+		$this->assertEqual($result, $expects);
+
+	}
+
 	public function testMerge() {
 
 		$this->Model->options = array(
