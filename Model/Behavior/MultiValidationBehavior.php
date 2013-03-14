@@ -14,14 +14,14 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	protected $_backupValidate = array();
 
-	public function setup($Model, $settings = array()) {
+	public function setup(Model $Model, $settings = array()) {
 
 		$this->settings[$Model->alias] = array_merge(self::$defaultSettings, (array)$settings);
 		return true;
 
 	}
 
-	public function restoreValidate($Model) {
+	public function restoreValidate(Model $Model) {
 
 		if (isset($this->_backupValidate[$Model->alias])) {
 			$Model->validate = $this->_backupValidate[$Model->alias];
@@ -30,7 +30,7 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function afterSave($Model, $created = true, $options = array()) {
+	public function afterSave(Model $Model, $created = true, $options = array()) {
 
 		if ($this->settings[$Model->alias]['restore']) {
 			$this->restoreValidate($Model);
@@ -40,7 +40,7 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function useValidationSet($Model, $method, $useBase = true) {
+	public function useValidationSet(Model $Model, $method, $useBase = true) {
 
 		if (is_array($method) || !preg_match(current(array_keys($this->mapMethods)), $method, $matches)) {
 			$validates = array_map('ucfirst', (array)$method);
@@ -68,7 +68,7 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function mergeValidationSet($Model) {
+	public function mergeValidationSet(Model $Model) {
 
 		$validationSets = func_get_args();
 		/* $Model = */ array_shift($validationSets);
@@ -90,7 +90,7 @@ class MultiValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function validatesFor($Model, $set, $options = array()) {
+	public function validatesFor(Model $Model, $set, $options = array()) {
 		$useBase = true;
 		if (is_bool($options)) {
 			$useBase = $options;
@@ -107,7 +107,7 @@ class MultiValidationBehavior extends ModelBehavior {
 		return $Model->validates($options);
 	}
 
-	public function beforeValidate($Model, $options = array()) {
+	public function beforeValidate(Model $Model, $options = array()) {
 		$optionName = $this->settings[$Model->alias]['saveOptionName'];
 
 		if (isset($options[$optionName])) {

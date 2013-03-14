@@ -9,12 +9,14 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		),
 	);
 
-	public function startTest() {
+	public function setUp() {
+		parent::setUp();
 		$this->_attach();
 	}
 
-	public function endTest() {
+	public function tearDown() {
 		$this->_clear();
+		parent::tearDown();
 	}
 
 	protected function _attach($settings = array()) {

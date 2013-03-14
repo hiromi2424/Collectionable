@@ -9,7 +9,7 @@ class VirtualFieldsBehavior extends ModelBehavior {
 	);
 	private $__virtualFieldsBackup = array();
 
-	public function setup($Model, $settings = array()) {
+	public function setup(Model $Model, $settings = array()) {
 
 		$this->settings[$Model->alias] = Set::merge(self::$defaultSettings, $settings);
 		extract($this->settings[$Model->alias]);
@@ -22,7 +22,7 @@ class VirtualFieldsBehavior extends ModelBehavior {
 
 	}
 
-	public function beforeFind($Model, $query = array()){
+	public function beforeFind(Model $Model, $query = array()){
 
 		extract($this->settings[$Model->alias]);
 
@@ -65,7 +65,7 @@ class VirtualFieldsBehavior extends ModelBehavior {
 
 	}
 
-	public function afterFind($Model, $results = array(), $primary = false) {
+	public function afterFind(Model $Model, $results = array(), $primary = false) {
 
 		if (isset($this->__virtualFieldsBackup[$Model->alias])) {
 			$Model->virtualFields = $this->__virtualFieldsBackup[$Model->alias];

@@ -9,11 +9,11 @@ class ConfigValidationBehavior extends ModelBehavior {
 	public $parametersName = 'parameters';
 	public $messagesName = 'messages';
 
-	public function setup($model, $settings = array()) {
+	public function setup(Model $model, $settings = array()) {
 		$this->_set($settings);
 	}
 
-	public function beforeValidate($model) {
+	public function beforeValidate(Model $model) {
 
 		if (!$model->validate || !is_array($model->validate)) {
 			return true;
@@ -27,7 +27,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function setValidationParameters($model) {
+	public function setValidationParameters(Model $model) {
 
 		$overwrite = $this->overwrite === true || $this->overwrite == $this->parametersName;
 		foreach ($model->validate as $field => $elements) {
@@ -49,7 +49,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function setValidationMessages($model) {
+	public function setValidationMessages(Model $model) {
 
 		$overwrite = $this->overwrite === true || $this->overwrite == $this->messagesName;
 
@@ -80,7 +80,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function convertValidationFormat($model) {
+	public function convertValidationFormat(Model $model) {
 
 		if (!$this->convertFormat) {
 			return;
@@ -112,7 +112,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function getValidationParameter($model, $field, $rule) {
+	public function getValidationParameter(Model $model, $field, $rule) {
 
 		if (is_array($field) || is_array($rule) || $field === null || $rule === null) {
 			throw new InvalidArgumentException(__d('collectionable', 'getValidationParameter() requires 2 arguments as $field and $rule'));
@@ -137,7 +137,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 
 	}
 
-	public function getValidationMessage($model, $rule, $field = null) {
+	public function getValidationMessage(Model $model, $rule, $field = null) {
 
 		if (is_array($rule) || $rule === null) {
 			throw new InvalidArgumentException(__d('collectionable', 'getValidationMessage() requires a argument as $rule'));

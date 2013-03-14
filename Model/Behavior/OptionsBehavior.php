@@ -29,7 +29,7 @@ class OptionsBehavior extends ModelBehavior {
 	private $__params;
 	private $__Model;
 
-	public function setup($Model, $settings = array()) {
+	public function setup(Model $Model, $settings = array()) {
 
 		$this->settings[$Model->alias] = Set::merge(self::$defaultSettings, (array)$settings);
 
@@ -53,7 +53,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	}
 
-	public function beforeFind($Model, $query = array()) {
+	public function beforeFind(Model $Model, $query = array()) {
 
 		$optionName = $this->settings[$Model->alias]['optionName'];
 		$autoDefault = $this->settings[$Model->alias]['autoDefault'];
@@ -68,7 +68,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	}
 
-	public function options($Model, $type = null){
+	public function options(Model $Model, $type = null){
 
 		$args = func_get_args();
 		if (func_num_args() > 2) {
@@ -209,12 +209,12 @@ class OptionsBehavior extends ModelBehavior {
 
 	}
 
-	public function configOption($Model, $configName) {
+	public function configOption(Model $Model, $configName) {
 		$baseConfig = $this->settings[$Model->alias]['baseConfig'];
 		return Configure::read($baseConfig . $configName);
 	}
 
-	public function sessionOption($Model, $sessionKey) {
+	public function sessionOption(Model $Model, $sessionKey) {
 		if (!class_exists('CakeSession')) {
 			App::uses('CakeSession', 'Model/Datasource');
 		}
@@ -222,7 +222,7 @@ class OptionsBehavior extends ModelBehavior {
 		return CakeSession::read($baseSessionKey . $sessionKey);
 	}
 
-	protected function _getDefault($Model, $defaultOption, $options) {
+	protected function _getDefault(Model $Model, $defaultOption, $options) {
 
 		$default = array();
 
@@ -238,7 +238,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	}
 
-	protected function _intelligentlyMerge($Model, $data, $merges, $options) {
+	protected function _intelligentlyMerge(Model $Model, $data, $merges, $options) {
 
 		$merges = (array)$merges;
 		if (Set::numeric(array_keys($merges))) {

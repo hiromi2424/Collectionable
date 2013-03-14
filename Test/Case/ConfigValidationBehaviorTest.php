@@ -39,21 +39,18 @@ class ConfigValidationBehaviorTest extends CakeTestCase {
 
 	}
 
-	public function startTest() {
-
+	public function setUp() {
+		parent::setUp();
 		$this->_configure();
 		$this->_attach();
 
 	}
 
-	public function endTest() {
-		$this->_clear();
-	}
-
 	public function tearDown() {
+		$this->_clear();
 		Configure::delete('TestValidation');
+		parent::tearDown();
 	}
-
 	public function _attach($settings = array()) {
 		App::uses('Model', 'Model');
 		App::import('TestSuite/Mock', 'Collectionable.ConfigValidaitonMockModel');

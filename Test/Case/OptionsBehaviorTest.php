@@ -11,14 +11,6 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	protected $_backupConfig;
 
-	public function setUp() {
-
-		App::uses('Model', 'Model');
-		App::import('TestSuite/Mock', 'Collectionable.OptionsBehaviorMockModel');
-		$this->Model = ClassRegistry::init('OptionsBehaviorMockModel');
-		$this->_reset();
-
-	}
 
 	protected function _reset($settings = array()) {
 
@@ -28,15 +20,20 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	}
 
-	public function startTest($method) {
+	public function setUp() {
+		parent::setUp();
+		App::uses('Model', 'Model');
+		App::import('TestSuite/Mock', 'Collectionable.OptionsBehaviorMockModel');
+		$this->Model = ClassRegistry::init('OptionsBehaviorMockModel');
 		$this->_reset(false);
 	}
 
-	public function endTest() {
+	public function tearDown() {
 		Configure::delete('OptionsBehaviorTestConfig');
 		if (class_exists('CakeSession')) {
 			CakeSession::delete('OptionsBehaviorTestSession');
 		}
+		parent::tearDown();
 	}
 
 	public function testArguments() {
