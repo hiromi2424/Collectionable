@@ -11,7 +11,7 @@ This is a utility plugin for CakePHP. This helps managing find options, virtualF
 - Define 'Validation'(such a config name can be modified by configure) section into Configure for ConfigValidationBehavior
 - Define $validate{PatternName}, like $validateAdd, same structure with $validate, for MultiValidationBehavior
 
-## Sample code ##
+## Examples ##
 
 ### OptionsBehavior ###
 
