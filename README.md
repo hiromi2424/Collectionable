@@ -1,5 +1,7 @@
 # Collectionable Plugin #
 
+[![Build Status](https://travis-ci.org/hiromi2424/Collectionable.png?branch=cake2)](https://travis-ci.org/hiromi2424/Collectionable)
+
 ## Introduction ##
 This is a utility plugin for CakePHP. This helps managing find options, virtualFields and validations.
 
