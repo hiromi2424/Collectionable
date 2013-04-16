@@ -55,6 +55,7 @@ Here is a simple Post Model.
 	}
 
 You can use them by like:
+
 	class PostsController extends AppController {
 		public function index() {
 			$this->paginate = $this->Post->options('index');
@@ -271,7 +272,7 @@ But if you turn $overwrite property on, "specifying Model and field" forces to o
 You can also use magick method like:
 
 	$this->useProfileValidation();
-	$this->useRequireEmailAndPasswordConfirm(); // too long :P
+	$this->useRequireEmailAndPasswordConfirmValidation(); // too long :P
 
 
 ## Thanks ##
