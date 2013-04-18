@@ -74,7 +74,7 @@ You can use them by like:
 		}
 	}
 
-To see more syntax, you would look at [the test case](http://github.com/hiromi2424/Collectionable/blob/master/tests/cases/behaviors/options.test.php) or [the code](http://github.com/hiromi2424/Collectionable/blob/master/models/behaviors/options.php).
+To see more syntax, you would look at [the test case](https://github.com/hiromi2424/Collectionable/blob/cake2/Test/Case/OptionsBehaviorTest.php) or [the code](https://github.com/hiromi2424/Collectionable/blob/cake2/Model/Behavior/OptionsBehavior.php).
 
 ### VirtualFieldsBehavior ###
 
