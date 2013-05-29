@@ -61,7 +61,7 @@ class OptionsBehavior extends ModelBehavior {
 			$options = isset($query[$optionName]) ? $query[$optionName]: array();
 			unset($query[$optionName]);
 
-			$query = Set::merge(self::$defaultQuery, $this->options($Model, $options), Set::filter($query));
+			$query = Set::merge($query, self::$defaultQuery, $this->options($Model, $options), Set::filter($query));
 		}
 
 		return $query;

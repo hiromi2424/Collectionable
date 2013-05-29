@@ -502,4 +502,20 @@ class OptionsBehaviorTest extends CakeTestCase {
 		$result = $this->Model->options('one');
 		$this->assertSame($expects, $result['conditions']);
 	}
+
+	public function testQueryNotFiltered() {
+		$this->_reset(array('autoDefault' => true));
+		$this->Model->options = array(
+			'default' => array(
+				'recursive' => -1,
+			),
+		);
+
+		$result = $this->Model->buildQuery('all', array(
+			'nullValue' => null,
+		));
+
+		$this->assertArrayHasKey('nullValue', $result);
+	}
+
 }
