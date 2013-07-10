@@ -279,4 +279,19 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 		$model->validates(array('validator' => array('edit', false)));
 	}
 
+	public function testEmptySet() {
+		$this->Model->validateSearch = [
+			'customer_name' => [
+			],
+			'customer_birthday' => [
+				'message' => '',
+			],
+		];
+
+		$this->Model->useValidationSet('Search', false);
+		$result = $this->Model->validate;
+		$expected = $this->Model->validateSearch;
+		$this->assertSame($expected, $result);
+	}
+
 }

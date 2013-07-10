@@ -76,6 +76,9 @@ class MultiValidationBehavior extends ModelBehavior {
 		$result = array();
 		foreach ($validationSets as $validationSet) {
 			foreach ($validationSet as $field => $ruleSet) {
+				if (!isset($result[$field])) {
+					$result[$field] = array();
+				}
 				foreach ($ruleSet as $name => $rules) {
 					if (isset($result[$field][$name])) {
 						$result[$field][$name] = array_merge($result[$field][$name], $rules);
