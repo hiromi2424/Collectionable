@@ -280,13 +280,13 @@ class MultiValidationBehaviorTestCase extends CakeTestCase {
 	}
 
 	public function testEmptySet() {
-		$this->Model->validateSearch = [
-			'customer_name' => [
-			],
-			'customer_birthday' => [
+		$this->Model->validateSearch = array(
+			'customer_name' => array(
+			),
+			'customer_birthday' => array(
 				'message' => '',
-			],
-		];
+			),
+		);
 
 		$this->Model->useValidationSet('Search', false);
 		$result = $this->Model->validate;
