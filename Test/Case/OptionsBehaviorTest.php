@@ -516,6 +516,15 @@ class OptionsBehaviorTest extends CakeTestCase {
 		));
 
 		$this->assertArrayHasKey('nullValue', $result);
+
+		$conditions = [
+			'someField' => null,
+		];
+		$result = $this->Model->buildQuery('all', array(
+			'conditions' => $conditions,
+		));
+
+		$this->assertSame($conditions, $result['conditions']);
 	}
 
 }

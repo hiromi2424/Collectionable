@@ -61,11 +61,15 @@ class OptionsBehavior extends ModelBehavior {
 			$options = isset($query[$optionName]) ? $query[$optionName]: array();
 			unset($query[$optionName]);
 
-			$query = Set::merge($query, self::$defaultQuery, $this->options($Model, $options), Set::filter($query));
+			$query = Set::merge($query, self::$defaultQuery, $this->options($Model, $options), array_filter($query, [$this, '_filter']));
 		}
 
 		return $query;
 
+	}
+
+	protected function _filter($value) {
+		return !empty($value) || $value === '0' || $value === 0;
 	}
 
 	public function options(Model $Model, $type = null){
