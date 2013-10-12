@@ -13,7 +13,7 @@ class ConfigValidationBehavior extends ModelBehavior {
 		$this->_set($settings);
 	}
 
-	public function beforeValidate(Model $model) {
+	public function beforeValidate(Model $model, $options = array()) {
 
 		if (!$model->validate || !is_array($model->validate)) {
 			return true;
