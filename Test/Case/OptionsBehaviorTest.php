@@ -1,5 +1,7 @@
 <?php
 
+App::uses('CakeSession', 'Model/Datasource');
+
 class OptionsBehaviorTest extends CakeTestCase {
 
 	public $Model;
@@ -30,7 +32,7 @@ class OptionsBehaviorTest extends CakeTestCase {
 
 	public function tearDown() {
 		Configure::delete('OptionsBehaviorTestConfig');
-		if (class_exists('CakeSession')) {
+		if (CakeSession::check('OptionsBehaviorTestSession')) {
 			CakeSession::delete('OptionsBehaviorTestSession');
 		}
 		parent::tearDown();

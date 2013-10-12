@@ -1,5 +1,7 @@
 <?php
 
+App::uses('CakeSession', 'Model/Datasource');
+
 class OptionsBehavior extends ModelBehavior {
 
 	public $settings = array();
@@ -219,9 +221,6 @@ class OptionsBehavior extends ModelBehavior {
 	}
 
 	public function sessionOption(Model $Model, $sessionKey) {
-		if (!class_exists('CakeSession')) {
-			App::uses('CakeSession', 'Model/Datasource');
-		}
 		$baseSessionKey = $this->settings[$Model->alias]['baseSessionKey'];
 		return CakeSession::read($baseSessionKey . $sessionKey);
 	}
