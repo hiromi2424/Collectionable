@@ -33,7 +33,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	public function setup(Model $Model, $settings = array()) {
 
-		$this->settings[$Model->alias] = Set::merge(self::$defaultSettings, (array)$settings);
+		$this->settings[$Model->alias] = Hash::merge(self::$defaultSettings, (array)$settings);
 
 		$optionName = $this->settings[$Model->alias]['optionName'];
 		if ($this->settings[$Model->alias]['setupProperty']) {
@@ -63,7 +63,7 @@ class OptionsBehavior extends ModelBehavior {
 			$options = isset($query[$optionName]) ? $query[$optionName]: array();
 			unset($query[$optionName]);
 
-			$query = Set::merge($query, self::$defaultQuery, $this->options($Model, $options), array_filter($query, [$this, '_filter']));
+			$query = Hash::merge($query, self::$defaultQuery, $this->options($Model, $options), array_filter($query, [$this, '_filter']));
 		}
 
 		return $query;
@@ -101,7 +101,7 @@ class OptionsBehavior extends ModelBehavior {
 			}
 
 		}
-		$option = Set::merge(Set::merge($default, $options), $option);
+		$option = Hash::merge(Hash::merge($default, $options), $option);
 
 		$this->__Model = $Model;
 
@@ -167,7 +167,7 @@ class OptionsBehavior extends ModelBehavior {
 			$convertedKey = $this->_magickParams($key);
 			if ($convertedKey !== $key) {
 				if (isset($option[$convertedKey])) {
-					$option = Set::merge($option, array($convertedKey => $option[$key]));
+					$option = Hash::merge($option, array($convertedKey => $option[$key]));
 				} else {
 					$option[$convertedKey] = $option[$key];
 				}
@@ -204,7 +204,7 @@ class OptionsBehavior extends ModelBehavior {
 
 	protected function _getParams() {
 
-		$params = !empty($this->__Model->data) ? Set::flatten($this->__Model->data) : array();
+		$params = !empty($this->__Model->data) ? Hash::flatten($this->__Model->data) : array();
 		$params = array_merge($params, array(
 			'id' => $this->__Model->id,
 			'alias' => $this->__Model->alias,
@@ -244,7 +244,7 @@ class OptionsBehavior extends ModelBehavior {
 	protected function _intelligentlyMerge(Model $Model, $data, $merges, $options) {
 
 		$merges = (array)$merges;
-		if (Set::numeric(array_keys($merges))) {
+		if (Hash::numeric(array_keys($merges))) {
 
 			foreach($merges as $merge) {
 				if (!empty($options[$merge])) {
@@ -260,7 +260,7 @@ class OptionsBehavior extends ModelBehavior {
 				unset($merges[$optionName]);
 			}
 
-			$data = Set::merge($data, $merges);
+			$data = Hash::merge($data, $merges);
 
 		}
 
