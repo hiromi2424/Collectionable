@@ -1,0 +1,14 @@
+{
+    "name": "hiromi2424/collectionable",
+    "description": "Collectionable plugin for CakePHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "dummy",
+            "email": "dummy@example.com"
+        }
+    ],
+    "require": {
+
+    }
+}
