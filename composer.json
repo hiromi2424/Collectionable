@@ -1,0 +1,20 @@
+{
+    "name": "hiromi2424/collectionable",
+    "description": "Collectionable plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "dummy",
+            "email": "dummy@example.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/hiromi2424/Collectionable/issues",
+        "source": "https://github.com/hiromi2424/Collectionable"
+    },
+    "require": {
+        "php": ">=5.3.0",
+        "composer/installers": "*"
+    }
+}
